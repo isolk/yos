@@ -1,0 +1,3 @@
+bochs/*.log
+bochs/*.img
+src/*.o

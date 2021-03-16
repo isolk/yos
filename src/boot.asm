@@ -1,56 +1,23 @@
-mov ax,0xb800  ; 这个地址是显存文字模式的起始地址,在此处开始填入字符的ASCII码，就会在屏幕上显示字符。
-mov ds,ax      ; 使用[bx]形式寻址，默认是使用ds的值作为基本地址。
+mov ds,0xb800
+mov ah,0x0E
+mov bl,0x1
 
-;---------------------
-xor bx,bx          ; 将bx值变为0
-mov byte [bx],'h'  ; 在ds:bx,也就是0xb8000处传入'h'的ASCII码
-inc bx             ; 将bx的值增加1，此时bx值为1
-mov byte [bx],0x70 ; 在0xb8000处传入0x70，这个0x70表示'h'子字符以白底黑字的颜色显示
+mov al,'l'
+int 0x10
+mov al,'o'
+int 0x10
 
-;剩下的逻辑类似，不断增加bx值，然后传入对应字符和对应的颜色属性
-inc bx
-mov byte [bx],'e'  
-inc bx
-mov byte [bx],0x70
-inc bx
-mov byte [bx],'l'
-inc bx
-mov byte [bx],0x70
-inc bx
-mov byte [bx],'l'  
-inc bx
-mov byte [bx],0x70
-inc bx
-mov byte [bx],'o'
-inc bx
-mov byte [bx],0x70
-inc bx
-mov byte [bx],','
-inc bx
-mov byte [bx],0x70
-inc bx
-mov byte [bx],'w'
-inc bx
-mov byte [bx],0x70
-inc bx
-mov byte [bx],'o'
-inc bx
-mov byte [bx],0x70
-inc bx
-mov byte [bx],'r'
-inc bx
-mov byte [bx],0x70
-inc bx
-mov byte [bx],'l'
-inc bx
-mov byte [bx],0x70
-inc bx
-mov byte [bx],'d'
-inc bx
-mov byte [bx],0x70
-;---------------
+mov ah,0x02    ; 读取
+mov al,1       ; 要读取扇区数
+mov ch,0       ; 磁道号
+mov cl,2       ; 起始扇区号
+mov dh,0       ; 磁头号
+mov dl,0x80    ; 驱动号
+mov bx,0x10000 ; es:bx是数据在内存的缓存地址
+int 0x13       ; 磁盘中断
 
 jmp $ ;这个指令表示跳转到当前位置，也就是循环跳转当前位置，无限循环，防止cpu继续向下运行。
+
 
 ; times 表示当前指令执行多少次。
 ; $表示当前指令地址，$$表示起始地址，也就是0。
