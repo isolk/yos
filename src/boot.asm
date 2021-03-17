@@ -1,4 +1,6 @@
-mov ds,0xb800
+; 打印loading
+mov bx,0xb800
+mov ds,bx
 mov ah,0x0E
 mov bl,0x1
 
@@ -6,6 +8,24 @@ mov al,'l'
 int 0x10
 mov al,'o'
 int 0x10
+mov al,'a'
+int 0x10
+mov al,'d'
+int 0x10
+mov al,'i'
+int 0x10
+mov al,'n'
+int 0x10
+mov al,'g'
+int 0x10
+mov al,'.'
+int 0x10
+mov al,'.'
+int 0x10
+mov al,'.'
+int 0x10
+
+; 读取第二扇区,放到 0x7e00处
 
 mov ah,0x02    ; 读取
 mov al,1       ; 要读取扇区数
@@ -13,8 +33,13 @@ mov ch,0       ; 磁道号
 mov cl,2       ; 起始扇区号
 mov dh,0       ; 磁头号
 mov dl,0x80    ; 驱动号
-mov bx,0x10000 ; es:bx是数据在内存的缓存地址
+
+mov bx,0x7e0
+mov es,bx   ; 
+mov bx,0       ; es:bx是数据在内存的缓存地址
 int 0x13       ; 磁盘中断
+
+jmp 0x7e0:0
 
 jmp $ ;这个指令表示跳转到当前位置，也就是循环跳转当前位置，无限循环，防止cpu继续向下运行。
 
