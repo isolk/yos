@@ -1,3 +1,5 @@
 bochs/*.log
 bochs/*.img
+obj/*.o
+obj/*.bin
 src/*.o
