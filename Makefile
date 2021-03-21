@@ -1,5 +1,5 @@
 cc = i686-elf-gcc
-CFLAGS = -c -std=gnu99 -ffreestanding -O2 -Wall -Wextra
+CFLAGS = -c -std=gnu99 -ffreestanding -O2 -Wall -Wextra  -I include
 
 SRC_C = $(wildcard src/*.c)
 OBJ_C=$(patsubst %.c,obj/%.o,$(notdir $(SRC_C)))
@@ -26,4 +26,4 @@ obj/%.o : src/%.asm
 run:
 	@bochs -qf bochs/bochs.cfg
 clean:
-	@rm obj/*.o obj/*.bin bochs/disk.img
+	@rm obj/*.o obj/*.bin
