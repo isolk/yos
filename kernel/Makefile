@@ -9,6 +9,7 @@ SRC_ASM = $(wildcard src/*.asm)
 OBJ_ASM=$(patsubst %.asm,obj/%.o,$(notdir $(SRC_ASM)))
 
 bin/disk.img: obj/yos.bin obj/boot.bin obj/loader.bin
+	@mkdir -p bin
 	@mkfile -n 1M bin/disk.img
 	@dd bs=512 count=1 if=obj/boot.bin of=bin/disk.img seek=0 conv=notrunc >/dev/null 2>&1
 	@dd bs=512 count=2 if=obj/loader.bin of=bin/disk.img seek=1 conv=notrunc >/dev/null 2>&1
@@ -26,5 +27,5 @@ obj/%.o : src/%.asm
 	@nasm -felf32 -o $@ $^
 
 clean:
-	@rm -f bin/disk.img
+	@rm -rf bin
 	@rm -f obj/*.o obj/*.bin

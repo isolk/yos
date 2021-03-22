@@ -16,6 +16,6 @@ lib/%.o: src/%.c
 
 clean:
 	@rm -f libstd.a
-	@rm -rf lib/*
+	@rm -rf lib
 
 -include $(DEP_C)

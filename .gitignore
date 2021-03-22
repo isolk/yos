@@ -1,13 +1,9 @@
 bochs/*.log
 bochs/*.img
 
-kernel/bin/*
-kernel/obj/*
-
 libc/lib/*
 libc/libstd.a
+
 kernel/bin/disk.img
-kernel/obj/boot.bin
-*.img
-*.bin
-*.o
+kernel/obj/*.bin
+kernel/obj/*.o
