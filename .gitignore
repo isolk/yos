@@ -6,3 +6,8 @@ kernel/obj/*
 
 libc/lib/*
 libc/libstd.a
+kernel/bin/disk.img
+kernel/obj/boot.bin
+*.img
+*.bin
+*.o
