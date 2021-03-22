@@ -1,5 +1,8 @@
 bochs/*.log
 bochs/*.img
-obj/*.o
-obj/*.bin
-src/*.o
+
+kernel/bin/*
+kernel/obj/*
+
+libc/lib/*
+libc/libstd.a

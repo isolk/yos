@@ -1,0 +1,1 @@
+bochs -qf bochs/bochs.cfg
