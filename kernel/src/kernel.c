@@ -1,10 +1,5 @@
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
-#include <vga.h>
 #include <terminal.h>
 #include <string.h>
-
 int _start()
 {
     clear();
