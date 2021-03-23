@@ -3,7 +3,7 @@
 int _start()
 {
     clear();
-    char *s = "hello,world.\nwhat you are!!!!!";
+    char *s = "iwantyou123...........11113445667778";
     print_string(s,strlen(s));
     set_cur();
     for(;;){}
