@@ -1,7 +1,7 @@
 #include<terminal.h>
 void clear(){
-    for(size_t i=0;i<25;i++){
-        for (size_t j=0;j<80;j++){
+    for(size_t i=0;i<ROW;i++){
+        for (size_t j=0;j<WIDTH;j++){
             put_char(i,j,' ');
         }
     }
