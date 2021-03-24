@@ -10,6 +10,7 @@ int _start()
     }
     
     print_string(r,sizeof(r));
+
     for(;;){}
     return 0;
 }
