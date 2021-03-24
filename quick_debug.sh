@@ -1,3 +1,3 @@
 ./clean.sh
 ./build.sh
-./qemu_start.sh
+./debug.sh

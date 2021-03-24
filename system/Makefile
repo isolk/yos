@@ -1,5 +1,5 @@
 CC = i686-elf-gcc
-CFLAGS = -c -std=gnu99 -ffreestanding -O2 -Wall -Wextra  -I include
+CFLAGS = -g -c -std=gnu99 -ffreestanding -O2 -Wall -Wextra  -I include
 
 SRC_C = $(wildcard src/*/*.c)
 OBJ_C=$(patsubst src/%.c,lib/%.o,$(SRC_C))
