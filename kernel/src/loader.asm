@@ -114,6 +114,14 @@ add esi,0x8200
 mov edi,[bx+0x08] ; 重定位内存地址 
 rep movsb 
 
+mov bx,0x8200+0x34+32
+cld
+mov ecx,[bx+0x10] ; 文件中长度
+mov esi,[bx+0x04] ; 文件偏移
+add esi,0x8200
+mov edi,[bx+0x08] ; 重定位内存地址 
+rep movsb 
+
 jmp [0x8200+0x18]
 
 hlt
