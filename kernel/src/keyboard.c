@@ -47,12 +47,6 @@ void init_keyboard()
 }
 
 
-static int current_loc = 0;
-/* Video memory starts at 0xb8000. Make it a constant pointer to
-   characters as this can improve compiler optimization since it
-   is a hint that the value of the pointer won't change */
-static char *const vidptr = (char*)0xb8000;
-
 void keyboard_handler()
 {
     signed char keycode;

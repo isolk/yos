@@ -13,3 +13,22 @@ keyboard_handler_init:
     call keyboard_handler
     popad
     iretd
+
+global time_handler_init
+extern time_handler
+time_handler_init:
+    pushad
+    cld
+    call time_handler
+    popad
+    iretd
+
+global sti
+sti:
+    sti
+    ret
+
+global cli
+cli:
+    cli
+    ret
