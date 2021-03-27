@@ -3,9 +3,11 @@
 #include<interrupt.h>
 #include<idt.h>
 #include<keyboard.h>
+#include<time.h>
 
 extern struct  idt_pointer idt_ptr;
 void keyboard_handler_init();
+void time_handler_init();
 
 int _start()
 {
@@ -18,9 +20,12 @@ int _start()
 
     // 加载键盘中断处理程序
     load_idt_entry(0x21,(uint32_t)keyboard_handler_init,0x08,0x8e);
+    load_idt_entry(0x28,(uint32_t)time_handler_init,0x08,0x8e);
 
     // 打开键盘中断
     init_keyboard();
+    init_time();
+    
     for(;;){}
     return 0;
 }
