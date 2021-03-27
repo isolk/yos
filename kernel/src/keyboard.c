@@ -63,14 +63,7 @@ void keyboard_handler()
     if(keycode >= 0 && keyboard_map[keycode]) {
         //vidptr[0] = keyboard_map[keycode];
         print_char(keyboard_map[keycode]);
-    }else if (keycode >= 0) 
-    {
-        print_char(keycode);
-    }else 
-    {
-        print_char('#');
     }
-    
     
     /* Send End of Interrupt (EOI) to master PIC */
     write_port_b(0x20, 0x20);
