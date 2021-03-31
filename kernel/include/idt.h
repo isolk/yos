@@ -5,3 +5,4 @@ void init_idtr();
 void load_idt(void*);
 void cli();
 void sti();
+void lgdtr(void*);

@@ -32,3 +32,26 @@ global cli
 cli:
     cli
     ret
+
+global lgdtr
+lgdtr:
+    mov edx,[esp+4]
+    lgdt [edx]
+    ret
+
+global put_char_c
+put_char_c:
+    push	ebp
+	mov	ebp, esp
+
+    push dword [ebp+12]
+    push dword [ebp+8]
+    push dword [ebp+4]
+    call far [local]
+    
+    add esp,12
+    mov esp,ebp
+	pop	ebp
+    ret
+local:
+    dw 0,0x18
