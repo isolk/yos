@@ -88,6 +88,8 @@ flush:
 mov cx,00000000_000_10_000b
 mov ds,cx
 mov es,cx
+mov es,cx
+mov ss,cx
 mov ebx,0xb8000
 mov byte [ebx+0x00],'l'
 mov byte [ebx+0x02],'o'
