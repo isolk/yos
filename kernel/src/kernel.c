@@ -9,6 +9,7 @@
 extern struct  idt_pointer idt_ptr;
 void keyboard_handler_init();
 void time_handler_init();
+void put_char_init();
 
 int _start()
 {
@@ -19,7 +20,7 @@ int _start()
     load_gdt_segment(0x92);
 
     // put_char的调用门
-    load_gdt_call((uint32_t)&put_char,3);
+    load_gdt_call((uint32_t)&put_char_init,3);
 
     init_gdt_pointer();
 
@@ -27,13 +28,13 @@ int _start()
 
     ll();
 
-    asm volatile ("xchg %bx, %bx");
+    //asm volatile ("xchg %bx, %bx");
     
-    put_char_c(0,0,'h');
+    put_char_c(0,0,'#');
 
-    asm volatile ("xchg %bx, %bx");
+    //asm volatile ("xchg %bx, %bx");
 
-    // put_char_c(0,1,'!');
+    put_char_c(0,1,'!');
 
     //asm volatile ("xchg %bx, %bx");
 
