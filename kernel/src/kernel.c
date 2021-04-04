@@ -5,6 +5,7 @@
 #include<keyboard.h>
 #include<time.h>
 #include<gdt.h>
+#include<page.h>
 
 extern struct  idt_pointer idt_ptr;
 void keyboard_handler_init();
@@ -13,6 +14,12 @@ void put_char_init();
 
 int _start()
 {
+    InitPageDir();
+
+    InitPageTable();
+
+    init_page();
+    
     // 代码段
     load_gdt_segment(0x98);
 
