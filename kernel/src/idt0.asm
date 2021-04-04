@@ -77,3 +77,14 @@ put_char_c:
 local:
     dd 0
     dw 0x18
+
+global init_page:
+init_page:
+    mov eax,0x003fe000                 ;PCD=PWT=0
+    mov cr3,eax
+
+    xchg bx, bx
+    mov eax,cr0
+    or eax,0x80000000
+    mov cr0,eax                        ;开启分页机制
+    ret
