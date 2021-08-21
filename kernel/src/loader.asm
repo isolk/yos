@@ -1,3 +1,10 @@
+xchg bx,bx
+
+mov ax,0xb800
+mov es,ax
+mov byte [es:0],'#'
+hlt
+
 ;------------------------------读取内核镜像--------------------------
 ; 1 boot.asm 2-3 loader.asm 4 kernel.c 的第一个扇区
 mov ah,0x02    ; 表示读取
@@ -16,6 +23,11 @@ int 0x13       ; 磁盘中断
 ;mov eax,0x20 ; section header postion
 ;mov bx,0x2e ; size of section headers
 ;mov cx,0x30 ; number of section headers
+
+mov ax,0xb800
+mov es,ax
+mov byte [es:2],'#'
+hlt
 
 mov ebx,[es:0x20]
 
@@ -39,7 +51,6 @@ jz cmm
 cmm: cmp ax,0
 jz read_over
   mov ah,0x02    ; 表示读取
-  ;mov al,al      ; 要读取扇区数
   mov ch,0       ; 磁道号
   mov cl,5       ; 起始扇区号,当前已经读取了1+2+1=4扇区，所以从第五个扇区开始，注意，扇区号从1开始，不是0
   mov dh,0       ; 磁头号
@@ -51,6 +62,11 @@ jz read_over
   int 0x13       ; 磁盘中断
 
 read_over: 
+
+mov ax,0xb800
+mov es,ax
+mov byte [es:0],'#'
+hlt
 
 ;---------------------进入保护模式----------------------------
 
@@ -97,6 +113,7 @@ mov byte [ebx+0x04],'d'
 mov byte [ebx+0x06],'d'
 mov byte [ebx+0x08],'i'
 mov byte [ebx+0x0a],'g'
+
 
 ;------------------加载内核代码段----------------------
 ; 0x34是程序段首地址，4字节

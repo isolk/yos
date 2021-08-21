@@ -37,28 +37,26 @@ int _start()
 
     //asm volatile ("xchg %bx, %bx");
     
-    put_char_c(0,0,'#');
 
     //asm volatile ("xchg %bx, %bx");
 
-    put_char_c(0,1,'!');
 
     //asm volatile ("xchg %bx, %bx");
 
-    // // 初始化中断控制器工作方式
-    // init_pic();
-    // // 设置idtr的地址
-    // init_idtr();
-    // // 真正加载idtr
-    // load_idt(&idt_ptr);
+    // 初始化中断控制器工作方式
+    init_pic();
+    // 设置idtr的地址
+    init_idtr();
+    // 真正加载idtr
+    load_idt(&idt_ptr);
 
-    // // 加载键盘中断处理程序
-    // load_idt_entry(0x21,(uint32_t)keyboard_handler_init,0x08,0x8e);
-    // load_idt_entry(0x28,(uint32_t)time_handler_init,0x08,0x8e);
+    // 加载键盘中断处理程序
+    load_idt_entry(0x21,(uint32_t)keyboard_handler_init,0x08,0x8e);
+    load_idt_entry(0x28,(uint32_t)time_handler_init,0x08,0x8e);
 
-    // // 打开键盘中断
-    // init_keyboard();
-    // init_time();
+    // 打开键盘中断
+    init_keyboard();
+    init_time();
     
     for(;;){}
     return 0;
