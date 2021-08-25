@@ -7,8 +7,8 @@ SysLen equ 32      ; 内核占用最大的磁盘扇区数
 jmp BootSeg:go
 go: mov ax,cs
     mov ds,ax
-	mov ss,ax
-	mov sp,0x400
+	; mov ss,ax
+	; mov sp,0x400
 
 ; 读取第2-3扇区,放到 0x7e00处
 mov ah,0x02    ; 表示读取
@@ -23,16 +23,16 @@ mov es,bx      ;
 mov bx,0       ; es:bx是数据在内存的缓存地址
 int 0x13       ; 磁盘中断
 
-cli
-xor si,si
-xor di,di
-mov ax,SysSeg
-mov ds,ax
-xor ax,ax
-mov es,ax
-mov cx,0x1000
-rep movsw   ; 将数据从ds：si 复制到  es:di，执行cx次，每次复制2字节
-
+; cli
+; xor si,si
+; xor di,di
+; mov ax,SysSeg
+; mov ds,ax
+; xor ax,ax
+; mov es,ax
+; mov cx,0x1000
+; rep movsw   ; 将数据从ds：si 复制到  es:di，执行cx次，每次复制2字节
+; sti
 
 ; 读取完成，跳转loader.asm继续剩下来的工作
 jmp 0x7e0:0

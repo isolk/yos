@@ -1,1 +1,1 @@
-qemu-system-i386 -drive file=bochs/disk.img,format=raw,index=0,media=disk
+qemu-system-i386 -drive file=kernel/bin/disk.img,format=raw,index=0,media=disk
