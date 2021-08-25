@@ -1,2 +1,2 @@
-void time_handler();
-void init_time();
+// void time_handler();
+// void init_time();

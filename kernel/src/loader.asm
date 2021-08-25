@@ -1,10 +1,3 @@
-xchg bx,bx
-
-mov ax,0xb800
-mov es,ax
-mov byte [es:0],'#'
-hlt
-
 ;------------------------------读取内核镜像--------------------------
 ; 1 boot.asm 2-3 loader.asm 4 kernel.c 的第一个扇区
 mov ah,0x02    ; 表示读取
@@ -17,17 +10,14 @@ mov dl,0x80    ; 驱动号
 mov bx,0x820
 mov es,bx      ; 
 mov bx,0       ; es:bx是数据在内存的缓存地址
+xchg bx,bx
 int 0x13       ; 磁盘中断
+xchg bx,bx
 
 ; 先计算elf文件的总长度
 ;mov eax,0x20 ; section header postion
 ;mov bx,0x2e ; size of section headers
 ;mov cx,0x30 ; number of section headers
-
-mov ax,0xb800
-mov es,ax
-mov byte [es:2],'#'
-hlt
 
 mov ebx,[es:0x20]
 
@@ -113,6 +103,7 @@ mov byte [ebx+0x04],'d'
 mov byte [ebx+0x06],'d'
 mov byte [ebx+0x08],'i'
 mov byte [ebx+0x0a],'g'
+hlt
 
 
 ;------------------加载内核代码段----------------------

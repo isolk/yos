@@ -1,5 +1,5 @@
 CC = i686-elf-gcc
-CFLAGS = -g -c -std=gnu99 -ffreestanding -O2 -Wall -Wextra  -I include
+CFLAGS = -g -std=gnu99 -ffreestanding -O2 -Wall -Wextra  -I include
 
 SRC_C = $(wildcard src/*/*.c)
 OBJ_C=$(patsubst src/%.c,lib/%.o,$(SRC_C))
@@ -16,7 +16,7 @@ $(shell mkdir -p $(DEP_SDIR))
 libsys.a: $(OBJ_C) $(OBJ_S)
 	@i686-elf-ar src $@ $^ 
 lib/%.o: src/%.c
-	@$(CC) -MD -c $< -o $@ $(CFLAGS)
+	$(CC) -MD -c $< -o $@ $(CFLAGS)
 lib/%.o: src/%.asm
 	@nasm -felf32 -o $@ $<
 

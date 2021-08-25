@@ -1,7 +1,4 @@
-#include<io.h>
-#include<terminal.h>
 #include<time.h>
-#include<string.h>
 #include<idt.h>
 void init_time()
 {
