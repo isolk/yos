@@ -12,7 +12,8 @@ void put_char_init();
 
 int _start()
 {
-    // print_string("hello",5)
+    asm volatile ("xchg %bx, %bx");
+    print_string("hello",5);
     // InitPageDir();
 
     // InitPageTable();
@@ -30,7 +31,6 @@ int _start()
 
     // init_gdt_pointer();
 
-    //asm volatile ("xchg %bx, %bx");
 
     // ll();
 

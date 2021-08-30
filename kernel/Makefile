@@ -1,5 +1,5 @@
-LIBSTD=/mnt/hgfs/yos/libc
-LIBSYS=/mnt/hgfs/yos/system
+LIBSTD=/home/yht/yos/libc
+LIBSYS=/home/yht/yos/system
 cc = i686-elf-gcc
 CFLAGS = -g -c -std=gnu99 -ffreestanding -O2 -Wall -Wextra  -I include -I $(LIBSTD)/include -I $(LIBSYS)/include 
 SRC_C = $(wildcard src/*.c)

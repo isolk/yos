@@ -10,9 +10,7 @@ mov dl,0x80    ; 驱动号
 mov bx,0x820
 mov es,bx      ; 
 mov bx,0       ; es:bx是数据在内存的缓存地址
-xchg bx,bx
 int 0x13       ; 磁盘中断
-xchg bx,bx
 
 ; 先计算elf文件的总长度
 ;mov eax,0x20 ; section header postion
@@ -53,48 +51,47 @@ jz read_over
 
 read_over: 
 
-mov ax,0xb800
-mov es,ax
-mov byte [es:0],'#'
-hlt
+;mov ax,0xb800
+;mov es,ax
+;mov byte [es:0],'@'
 
 ;---------------------进入保护模式----------------------------
 
 ;创建两个GDT段，全局代码段和显存段。
 gdt_addr equ 0x6000
+mov bx,0
+mov es,bx
 
 ; 强制要求空段
-mov dword [gdt_addr],0x00
-mov dword [gdt_addr+4],0x00
+mov dword [es:gdt_addr],0x00
+mov dword [es:gdt_addr+4],0x00
 
 ; 代码段,0 4G
-mov dword [gdt_addr+8],0x00_00_ff_ff
-mov dword [gdt_addr+12],0x00_cf_98_00
+mov dword [es:gdt_addr+8],0x00_00_ff_ff
+mov dword [es:gdt_addr+12],0x00_cf_98_00
 
 ; 数据段 0,4G
-mov dword [gdt_addr+16],0x00_00_ff_ff
-mov dword [gdt_addr+20],0x00_cf_92_00
+mov dword [es:gdt_addr+16],0x00_00_ff_ff
+mov dword [es:gdt_addr+20],0x00_cf_92_00
 
-lgdt [0x7e00+gdt_size]
+lgdt [0x200+gdt_size]
 
-in al,0x92
-or al,0000_0010B
-out 0x92,al
+;mov ax,0x92
+;;or al,0000_0010B
+;out 0x92,al
 
-cli
+mov ax,0x1
+lmsw word ax
 
-mov eax,cr0
-or eax,1
-mov cr0,eax
-
-jmp dword 0x0008:flush+0x7e00
+xchg bx,bx
+jmp dword 0x0008:flush+0x200+0x7c00
 
 [bits 32]
 flush:
-mov cx,00000000_000_10_000b
+xchg bx,bx
+mov cx,0x10
+mov es,cx
 mov ds,cx
-mov es,cx
-mov es,cx
 mov ss,cx
 mov ebx,0xb8000
 mov byte [ebx+0x00],'l'
@@ -103,7 +100,6 @@ mov byte [ebx+0x04],'d'
 mov byte [ebx+0x06],'d'
 mov byte [ebx+0x08],'i'
 mov byte [ebx+0x0a],'g'
-hlt
 
 
 ;------------------加载内核代码段----------------------
@@ -133,8 +129,6 @@ mov edi,[bx+0x08] ; 重定位内存地址
 rep movsb 
 
 jmp [0x8200+0x18]
-
-hlt
 
 gdt_size dw 23
          dd 0x006000

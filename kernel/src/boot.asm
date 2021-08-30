@@ -1,3 +1,4 @@
+cli
 ;boot读取kernel到0x7c00+0x8000处，默认长度不超过16k
 ;移动kernel到0处
 BootSeg equ 0x07c0 ; boot一开始被bios加载到物理地址0x7c00处
