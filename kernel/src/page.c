@@ -35,17 +35,14 @@ void InitPageDir()
     }
 
          //mov ebx,0xfffff000                 ;页目录自己的线性地址 
-    asm volatile ("xchg %bx, %bx");
     uint32_t ptr = (uint32_t)paget_table;
     ptr = ptr&0xFFFFF000; // 清零低12位
     paget_dir[0].data = ptr|0x3;
     paget_dir[1023].data = ((uint32_t)paget_dir)|0x3;
-    asm volatile ("xchg %bx, %bx");
 }
 
 void InitPageTable()
 {
-    asm volatile ("xchg %bx, %bx");
     //对于内核空间，进行相同映射。也就是对于地址小于4MB的线性地址，全部映射成相同的物理地址.
     for (size_t i = 0; i < 1*K; i++)
     {

@@ -3,19 +3,14 @@
 void init_time()
 {
     cli();
-    //write_port_b(0x70,0x8a);
-    //write_port_b(0x71,0x2e);
-
-    //write_port_b(0x70,0x8b);
-    //write_port_b(0x71,0x42);
 
     write_port_b(0x70,0x8b);
     write_port_b(0x71,0x12);
+
     write_port_b(0x70,0x0c);
     read_port_b(0x71);
 
-    uint8_t curmask_master =  read_port_b(0xa1);
-    write_port_b(0xa1, curmask_master & 0xFE);
+    write_port_b(0xa1,0x00);
     sti();
 }
 
@@ -23,7 +18,9 @@ void init_time()
 void time_handler()
 {
     /* Send End of Interrupt (EOI) to master PIC */
-    //print_char('#');
+    print_char('#');
+
+    asm volatile ("xchg %bx, %bx");
 
     write_port_b(0x70,0x80);
     uint8_t sec = read_port_b(0x71);

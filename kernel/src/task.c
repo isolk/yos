@@ -8,6 +8,7 @@ struct ldt
 
 struct tss
 {
+    
 };
 
 

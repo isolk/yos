@@ -17,6 +17,7 @@ keyboard_handler_init:
 global time_handler_init
 extern time_handler
 time_handler_init:
+    xchg bx,bx
     pushad
     cld
     call time_handler
@@ -28,7 +29,6 @@ put_char_init:
    push	ebp
 	mov	ebp, esp
 
-    xchg bx, bx
     push dword [ebp+0x14]
     push dword [ebp+0x10]
     push dword [ebp+0x0c]
@@ -62,7 +62,6 @@ put_char_c:
     push	ebp
 	mov	ebp, esp
 
-    xchg bx, bx
     push dword [ebp+0x10]
     push dword [ebp+0x0c]
     push dword [ebp+0x08]
@@ -83,7 +82,6 @@ init_page:
     mov eax,0x003fe000                 ;PCD=PWT=0
     mov cr3,eax
 
-    xchg bx, bx
     mov eax,cr0
     or eax,0x80000000
     mov cr0,eax                        ;开启分页机制

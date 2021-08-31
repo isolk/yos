@@ -36,12 +36,8 @@ rep movsb   ; 将数据从ds：si 复制到  es:di，执行cx次，每次复制
 mov ax,cs
 mov ds,ax   ;ds=0x7c0
 
-xchg bx,bx
-
 lidt [idt_48]
 lgdt [gdt_48]
-
-xchg bx,bx
 
 mov ax,0xb800
 mov es,ax

@@ -18,13 +18,13 @@ struct gdt_pointer
 }__attribute__((packed));
 
 
-struct gdt_entry gdt_tables[1000];
+struct gdt_entry gdt_tables[256];
 struct gdt_pointer gdt_ptr;
 int entry_index = 1;
 
 void init_gdt_pointer()
 {
-    gdt_ptr.limit = 1000*8-1;
+    gdt_ptr.limit = 256*8-1;
     gdt_ptr.addr = (uint32_t)&gdt_tables;
 }
 

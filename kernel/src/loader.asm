@@ -83,12 +83,10 @@ lgdt [0x200+gdt_size]
 mov ax,0x1
 lmsw word ax
 
-xchg bx,bx
 jmp dword 0x0008:flush+0x200+0x7c00
 
 [bits 32]
 flush:
-xchg bx,bx
 mov cx,0x10
 mov es,cx
 mov ds,cx

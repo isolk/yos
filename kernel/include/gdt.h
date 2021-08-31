@@ -1,8 +1,6 @@
 #include<stddef.h>
 #include<stdint.h>
 
-
-
 void load_gdt_segment(uint8_t flags);
 
 void Load_gdt_tss();
