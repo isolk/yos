@@ -18,9 +18,19 @@ void init_time()
 void time_handler()
 {
     /* Send End of Interrupt (EOI) to master PIC */
-    print_char('#');
+    asm volatile ("xchg %bx,%bx");
+    asm volatile ("mov %ds, %eax");
+    asm volatile ("push %ax");
+    uint16_t ds=echo();
+    if (ds == 0x10){
+        print_char('#');
+    }else 
+    {
+        print_char('!');
+    }
+    
 
-    asm volatile ("xchg %bx, %bx");
+    // asm volatile ("xchg %bx, %bx");
 
     write_port_b(0x70,0x80);
     uint8_t sec = read_port_b(0x71);

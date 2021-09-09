@@ -17,7 +17,6 @@ keyboard_handler_init:
 global time_handler_init
 extern time_handler
 time_handler_init:
-    xchg bx,bx
     pushad
     cld
     call time_handler
@@ -85,4 +84,9 @@ init_page:
     mov eax,cr0
     or eax,0x80000000
     mov cr0,eax                        ;开启分页机制
+    ret
+
+global echo:
+echo:
+    mov eax, [esp + 4]
     ret

@@ -1,23 +1,6 @@
 #include<gdt.h>
 #include<idt.h>
 
-struct gdt_entry
-{
-    uint16_t w1;
-    uint16_t w2;
-    uint8_t b1;
-    uint8_t b2;
-    uint8_t b3;
-    uint8_t b4;
-}__attribute__((packed));
-
-struct gdt_pointer
-{
-    uint16_t limit;
-    uint32_t addr;
-}__attribute__((packed));
-
-
 struct gdt_entry gdt_tables[256];
 struct gdt_pointer gdt_ptr;
 int entry_index = 1;
@@ -54,4 +37,31 @@ void load_gdt_call(uint32_t addr,uint8_t params_count)
     gdt_tables[entry_index].b3 = (addr >> 16) & 0xFF; // 2
     gdt_tables[entry_index].b4 = (addr >> 24) & 0xFF; // 3
     entry_index++; 
+}
+
+struct gdt_entry* new_gdt()
+{
+    return &(gdt_tables[entry_index++]);
+}
+
+void init_gdt_ldt(struct gdt_entry* g,uint32_t addr, uint32_t limit)
+{
+    g->w1 = limit;
+    g->w2 = addr;
+    g->b1 = addr >> 16;
+    g->b2 = 0b11100010;//p_dpl(2)_s_type(4)
+    g->b3 = 0b00000000;//g_d_l_avl_limit(19-16)
+    g->b3 |= limit >> 16;
+    g->b4 = addr >> 24;
+}
+
+void init_gdt_tss(struct gdt_entry* g,uint32_t addr,uint32_t limit)
+{
+    g->w1 = limit;
+    g->w2 = addr;
+    g->b1 = addr >> 16;
+    g->b2 = 0b11100011;//p_dpl(2)_s_type(4)
+    g->b3 = 0b00000000;//g_d_l_avl_limit(19-16)
+    g->b3 |= limit >> 16;
+    g->b4 = addr >> 24;
 }

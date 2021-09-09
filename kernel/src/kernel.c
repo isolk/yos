@@ -4,6 +4,7 @@
 #include<time.h>
 #include<gdt.h>
 #include<page.h>
+#include<ldt.h>
 
 extern struct  idt_pointer idt_ptr;
 void keyboard_handler_init();
@@ -26,6 +27,15 @@ int _start()
 
     // 数据段
     load_gdt_segment(0x92);
+
+    // ldt1 2
+    init_gdt_ldt(new_gdt(),new_ldt_begin(),32*3-1);
+    // init data code null
+    init_gdt_ldt(new_gdt(),new_ldt_begin(),32*3-1);
+
+    // tss1 2
+    init_gdt_tss(new_gdt,);
+    init_gdt_tss();
 
     // put_char的调用门
     // load_gdt_call((uint32_t)&put_char_init,3);
@@ -57,9 +67,24 @@ int _start()
 
     // 打开键盘中断
     init_keyboard();
+
+    init_task();
+
+    // go to fisrt task
+
     
     for(;;){
         asm("hlt");
     }
     return 0;
+}
+
+void task1()
+{
+    print_string("task A",6);
+}
+
+void task2()
+{
+    print_string("task B",6);
 }
