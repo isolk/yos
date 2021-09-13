@@ -5,6 +5,7 @@
 #include<gdt.h>
 #include<page.h>
 #include<ldt.h>
+#include<tss.h>
 
 extern struct  idt_pointer idt_ptr;
 void keyboard_handler_init();
@@ -13,66 +14,64 @@ void put_char_init();
 
 int _start()
 {
-    sti();
-    // set gdt in 0x0->8*256
+    // 测试代码，先屏蔽中断。
+    cli();
+
+    // 先打印hello，表示成功进入到这儿了。
     print_string("hello",5);
-    // InitPageDir();
 
-    // InitPageTable();
+    // 分别设置gdt表的内核数据段和代码段 
+    init_gdt_code(new_gdt(),0,0xFFFFFFFF);
+    init_gdt_data(new_gdt(),0,0xFFFFFFFF);
 
-    // init_page();
-    
-    // 代码段
-    load_gdt_segment(0x98);
+    // 创建2个ldt段，分别是任务1和任务2的ldt。他们分别占据gdt的3-4段。 然后所有的ldt段都是指向同一个线性地址，每个ldt段包含有2个段。
+    init_gdt_ldt(new_gdt(),new_ldt_begin(),8*3-1);
+    init_gdt_ldt(new_gdt(),new_ldt_begin(),8*3-1);
 
-    // 数据段
-    load_gdt_segment(0x92);
+    // 创建2个tss段，任务1和2的tss，占据5-6段。
+    tss* t = new_tss();
+    init_tss1(t);
+    init_gdt_tss(new_gdt(),t,103);
+    // t = new_tss();
+    // init_tss1(t);
+    // init_gdt_tss(new_gdt(),new_tss(),104);
 
-    // ldt1 2
-    init_gdt_ldt(new_gdt(),new_ldt_begin(),32*3-1);
-    // init data code null
-    init_gdt_ldt(new_gdt(),new_ldt_begin(),32*3-1);
-
-    // tss1 2
-    init_gdt_tss(new_gdt,);
-    init_gdt_tss();
-
-    // put_char的调用门
-    // load_gdt_call((uint32_t)&put_char_init,3);
-
+    // 设置gdtr的内容，然后加载gdtr
+    // 但是此时cs ds值还没改
     init_gdt_pointer();
-
-
     ll();
+
+    // 到这儿，gdt的东西已经处理完了。 下面我们处理tss段。
+
+    // tss段设置完毕，开始设置中断
+
 
     // 初始化中断控制器工作方式
     init_pic();
-    // 设置idtr的地址
     init_idtr();
-    // 真正加载idtr
     load_idt(&idt_ptr);
-
-
     for (size_t i = 0; i < 256; i++)
     {
         load_idt_entry(i,(uint32_t)time_handler_init,0x08,0x8e);
     }
 
-    // 加载键盘中断处理程序
-    load_idt_entry(0x21,(uint32_t)keyboard_handler_init,0x08,0x8e);
-    load_idt_entry(0x28,(uint32_t)time_handler_init,0x08,0x8e);
-    
-
+    // 初始化时间的端口设置,设置时间中断
     init_time();
+    load_idt_entry(0x28,(uint32_t)time_handler_init,0x08,0x8e);
 
-    // 打开键盘中断
+    // 设置键盘中断,以及初始化键盘操作
+    load_idt_entry(0x21,(uint32_t)keyboard_handler_init,0x08,0x8e);
     init_keyboard();
 
-    init_task();
+    // 开启中断，现在开始，中段就会来了。
+    // sti();
 
-    // go to fisrt task
+    asm("xchg %bx,%bx");
+    asm("mov $0x18,%bx");
+    asm("lldt %bx");
 
-    
+    asm("jmpl $0x28,$0");
+
     for(;;){
         asm("hlt");
     }

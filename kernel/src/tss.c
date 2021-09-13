@@ -1,45 +1,40 @@
-#include<stddef.h>
-#include <stdint.h>
+#include <tss.h>
 
-struct ldt_entry ldt_tables[64*3];
-int entry_index = 0;
+tss tss_tables[256];
+int tss_index = 0;
 
-void init_ldt_null(struct ldt_entry* l)
-{
-    l->w1 = 0;
-    l->w2 = 0;
-    l->b1 = 0;
-    l->b2 = 0;
-    l->b3 = 0; 
-    l->b4 = 0;
+void tss_func1(){
+    print_string("hello",5);
 }
 
-void init_ldt_data(struct ldt_entry* l,uint32_t addr, uint32_t limit)
-{
-    l->w1 = limit;
-    l->w2 = addr;
-    l->b1 = addr >> 16;
-    l->b2 = 0b11110010;//p_dpl(2)_s_type(4)
-    l->b3 = 0b11000000;//g_d/b_l_avl_limit(19-16)
-    l->b3 |= limit >> 16;
-    l->b4 = addr >> 24;
+tss *new_tss(){
+    return &tss_tables[tss_index++];
 }
 
-void init_ldt_code(struct ldt_entry* l,uint32_t addr, uint32_t limit)
-{
-    l->w1 = limit;
-    l->w2 = addr;
-    l->b1 = addr >> 16;
-    l->b2 = 0b11111000;//p_dpl(2)_s_type(4)
-    l->b3 = 0b11000000;//g_d/b_l_avl_limit(19-16)
-    l->b3 |= limit >> 16;
-    l->b4 = addr >> 24;
+void init_tss1(tss * t){
+    t -> io =1;
+    t->tss =0;
+
+    t->eip = tss_func1;
+    t->eflags = 0;
+    t->esp = 4*1024*1024*1024;
+
+    t->ss0 = 0x10;
+    t->esp0 = 4*1024*1024*1024;
+
+    t->ss = 0x10;
+    t->cs = 0x08;
+    t->es=0x10;
+    t->ss=0x10;
+    t->ds=0x10;
+    t->fs=0x10;
+    t->gs=0x10;
+    t->ldt_selector = 0x18;
+    t->io=0;
 }
 
-struct ldt_entry *new_ldt_begin()
-{
 
-    struct ldt_entry *result = &(ldt_tables[entry_index*3]);
-    entry_index++;
-    return result;
+
+void tss_func2(){
+
 }

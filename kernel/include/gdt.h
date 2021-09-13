@@ -5,7 +5,7 @@ struct gdt_entry
 {
     uint16_t w1;
     uint16_t w2;
-    uint16_t b1;
+    uint8_t b1;
     uint8_t b2;
     uint8_t b3;
     uint8_t b4;
@@ -30,6 +30,10 @@ void ll();
 void init_gdt_pointer();
 
 void put_char_c(size_t row,size_t column,uint8_t str);
+
+void init_gdt_data(struct gdt_entry* l,uint32_t addr, uint32_t limit);
+
+void init_gdt_code(struct gdt_entry* l,uint32_t addr, uint32_t limit);
 
 void init_gdt_ldt(struct gdt_entry* g,uint32_t addr, uint32_t limit);
 

@@ -41,11 +41,7 @@ unsigned char keyboard_map[128] =
 
 void init_keyboard()
 {
-  cli();
-  // 1111 1001
-  // 1111 0101                   aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa fuck me off!
   write_port_b(0x21, 0xF9);
-  sti();
 }
 
 

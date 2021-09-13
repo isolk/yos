@@ -1,7 +1,7 @@
 #include<stddef.h>
 #include <stdint.h>
 
-struct tss
+typedef struct tss
 {
     uint32_t tss;
 
@@ -34,4 +34,7 @@ struct tss
     uint32_t gs;
     uint32_t ldt_selector;
     uint32_t io;
-}__attribute__((packed));
+}__attribute__((packed)) tss;
+
+tss *new_tss();
+void init_tss1(tss * t);
