@@ -15,18 +15,18 @@ void init_time()
 
 void time_handler()
 {
-    write_port_b(0x20, 0x20);
-    write_port_b(0xa0, 0x20);
-    asm("xchg %bx,%bx");
-    // 判断当前任务号，使用jmp切换
-    if (cur_task == 0){
-        cur_task = 1;
-        asm("jmp $0x30,$0");
-    }else 
-    {
-        cur_task = 0;
-        asm("jmp $0x28,$0");
-    }
+    // write_port_b(0x20, 0x20);
+    // write_port_b(0xa0, 0x20);
+    // asm("xchg %bx,%bx");
+    // // 判断当前任务号，使用jmp切换
+    // if (cur_task == 0){
+    //     cur_task = 1;
+    //     asm("jmp $0x30,$0");
+    // }else 
+    // {
+    //     cur_task = 0;
+    //     asm("jmp $0x28,$0");
+    // }
     
 }
 

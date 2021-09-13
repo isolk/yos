@@ -18,15 +18,15 @@ int _start()
     cli();
 
     // 先打印hello，表示成功进入到这儿了。
-    print_string("hello",5);
+    // print_string("hello",5);
 
     // 分别设置gdt表的内核数据段和代码段 
     init_gdt_code(new_gdt(),0,0xFFFFFFFF);
     init_gdt_data(new_gdt(),0,0xFFFFFFFF);
 
     // 创建2个ldt段，分别是任务1和任务2的ldt。他们分别占据gdt的3-4段。 然后所有的ldt段都是指向同一个线性地址，每个ldt段包含有2个段。
-    init_gdt_ldt(new_gdt(),new_ldt_begin(),8*3-1);
-    init_gdt_ldt(new_gdt(),new_ldt_begin(),8*3-1);
+    init_gdt_ldt(new_gdt(),new_ldt_begin(),24);
+    init_gdt_ldt(new_gdt(),new_ldt_begin(),24);
 
     // 创建2个tss段，任务1和2的tss，占据5-6段。
     tss* t = new_tss();
