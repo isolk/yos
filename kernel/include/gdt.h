@@ -39,4 +39,6 @@ void init_gdt_ldt(struct gdt_entry* g,uint32_t addr, uint32_t limit);
 
 void init_gdt_tss(struct gdt_entry* g,uint32_t addr, uint32_t limit);
 
+void init_gdt_task(struct gdt_entry* g,uint16_t selector);
+
 struct gdt_entry* new_gdt();

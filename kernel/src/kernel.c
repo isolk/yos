@@ -36,6 +36,8 @@ int _start()
     // init_tss1(t);
     // init_gdt_tss(new_gdt(),new_tss(),104);
 
+    init_gdt_task(new_gdt(),0x28);
+
     // 设置gdtr的内容，然后加载gdtr
     // 但是此时cs ds值还没改
     init_gdt_pointer();
@@ -67,10 +69,7 @@ int _start()
     // sti();
 
     asm("xchg %bx,%bx");
-    asm("mov $0x18,%bx");
-    asm("lldt %bx");
-
-    asm("jmpl $0x28,$0");
+    asm("jmpl $0x30,$0");
 
     for(;;){
         asm("hlt");

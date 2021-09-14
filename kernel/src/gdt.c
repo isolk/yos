@@ -73,7 +73,7 @@ void init_gdt_ldt(struct gdt_entry* g,uint32_t addr, uint32_t limit)
     g->w1 = limit;
     g->w2 = addr;
     g->b1 = addr >> 16;
-    g->b2 = 0b10000010;//p_dpl(2)_s_type(4)
+    g->b2 = 0b11100010;//p_dpl(2)_s_type(4)
     g->b3 = 0b01000000;//g_d_l_avl_limit(19-16)
     g->b3 |= (limit << 12) >> 28;
     g->b4 = addr >> 24;
@@ -84,8 +84,18 @@ void init_gdt_tss(struct gdt_entry* g,uint32_t addr,uint32_t limit)
     g->w1 = limit;
     g->w2 = addr;
     g->b1 = addr >> 16;
-    g->b2 = 0b10001001;//p_dpl(2)_s_type(4)
+    g->b2 = 0b11101001;//p_dpl(2)_s_type(4)
     g->b3 = 0b01000000;//g_d_l_avl_limit(19-16)
     g->b3 |= (limit << 12) >> 28;
     g->b4 = addr >> 24;
+}
+
+void init_gdt_task(struct gdt_entry* g,uint16_t selector)
+{
+    g->w1 = 0;
+    g->w2 = selector;
+    g->b1 = 0;
+    g->b2 = 0b10000101;//p_dpl(2)_s_type(4)
+    g->b3 = 0;
+    g->b4 = 0;
 }

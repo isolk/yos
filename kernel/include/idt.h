@@ -6,3 +6,4 @@ void load_idt(void*);
 void cli();
 void sti();
 void lgdtr(void*);
+void ltr(void*);

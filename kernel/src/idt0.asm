@@ -90,3 +90,9 @@ global echo:
 echo:
     mov eax, [esp + 4]
     ret
+
+global ltr
+ltr:
+    mov edx,[esp+4]
+    ltr [edx]
+    ret
