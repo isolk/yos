@@ -9,6 +9,8 @@
 
 extern struct  idt_pointer idt_ptr;
 void keyboard_handler_init();
+void default_handler_init();
+void syscall_handler_init();
 void time_handler_init();
 void put_char_init();
 
@@ -18,7 +20,7 @@ int _start()
     cli();
 
     // 先打印hello，表示成功进入到这儿了。
-    // print_string("hello",5);
+    print_string("hello",5);
 
     // 分别设置gdt表的内核数据段和代码段 
     init_gdt_code(new_gdt(),0,0xFFFFFFFF);
@@ -54,7 +56,7 @@ int _start()
     load_idt(&idt_ptr);
     for (size_t i = 0; i < 256; i++)
     {
-        load_idt_entry(i,(uint32_t)time_handler_init,0x08,0x8e);
+        load_idt_entry(i,(uint32_t)default_handler_init,0x08,0x8e);
     }
 
     // 初始化时间的端口设置,设置时间中断
@@ -65,8 +67,10 @@ int _start()
     load_idt_entry(0x21,(uint32_t)keyboard_handler_init,0x08,0x8e);
     init_keyboard();
 
+    load_idt_entry(0x80,(uint32_t)syscall_handler_init,0x08,0b11101110);
+
     // 开启中断，现在开始，中段就会来了。
-    // sti();
+    sti();
 
     asm("xchg %bx,%bx");
     asm("jmpl $0x30,$0");

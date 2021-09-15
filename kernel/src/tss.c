@@ -4,9 +4,7 @@ tss tss_tables[256];
 int tss_index = 0;
 
 void tss_func1(){
-    asm("xchg %bx,%bx");
-    print_char('*');
-    print_string("hello",5);
+    asm("int $0x80");
 }
 
 tss *new_tss(){
@@ -18,14 +16,14 @@ void init_tss1(tss * t){
     t->tss =0;
 
     t->eip = tss_func1;
-    t->eflags = 0;
+    t->eflags = 0x200;
     t->esp = 1023;
 
     // 0000 0000 0001 0000
     // 0000 0000 0001 1100
     // 01100
-    t->ss0 = 0x0b1111;
-    t->esp0 = 1023;
+    t->ss0 = 0b10000;
+    t->esp0 = 4*1024*1024+1024;
 
     t->cs = 0b01111;
     t->es=0b10111;

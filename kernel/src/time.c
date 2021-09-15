@@ -15,8 +15,12 @@ void init_time()
 
 void time_handler()
 {
-    // write_port_b(0x20, 0x20);
-    // write_port_b(0xa0, 0x20);
+    write_port_b(0x70,0x0c);
+    read_port_b(0x71);
+
+    write_port_b(0x20, 0x20);
+    write_port_b(0xa0, 0x20);
+    print_char("t");
     // asm("xchg %bx,%bx");
     // // 判断当前任务号，使用jmp切换
     // if (cur_task == 0){
@@ -79,4 +83,20 @@ void show_time(){
     l = sec&0x0F;
     put_char(0,6,h+'0');
     put_char(0,7,l+'0');
+}
+
+void default_handler()
+{
+    // write_port_b(0x70,0x0c);
+    // read_port_b(0x71);
+
+    // asm("xchg %bx,%bx");
+    // write_port_b(0x20, 0x20);
+    // write_port_b(0xa0, 0x20);
+    // print_char('*');
+}
+
+void syscall_handler()
+{
+    print_char('@');
 }

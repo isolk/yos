@@ -19,9 +19,17 @@ extern time_handler
 time_handler_init:
     pushad
     cld
+    push ds
+    mov eax,0x10
+    mov ds,ax
+    mov es,ax
     call time_handler
+    pop eax
+    mov ds,ax
+    mov es,ax
     popad
     iretd
+
 global put_char_init
 extern put_char
 put_char_init:
@@ -96,3 +104,30 @@ ltr:
     mov edx,[esp+4]
     ltr [edx]
     ret
+
+global syscall_handler_init
+extern syscall_handler
+syscall_handler_init:
+    pushad
+    cld
+    push ds
+    mov eax,0x10
+    mov ds,ax
+    mov es,ax
+
+    call syscall_handler
+    pop eax
+    mov ds,ax
+    mov es,ax
+
+    popad
+    iret
+
+global default_handler_init
+extern default_handler
+default_handler_init:
+    pushad
+    cld
+    call default_handler
+    popad
+    iret
