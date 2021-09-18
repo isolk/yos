@@ -17,9 +17,13 @@ int 0x13       ; 磁盘中断
 ;mov bx,0x2e ; size of section headers
 ;mov cx,0x30 ; number of section headers
 
-mov ebx,[es:0x20]
+;0x34 program header start
+;0x2a     program header size
+;0x2c     program count
 
-mov ax,[es:0x2e]
+mov ebx,[es:0x20] ; program header posstion
+
+mov ax,[es:0x2e] ; number of program header
 mov dx,[es:0x30]
 mul dx   ;dx:ax
 
@@ -34,7 +38,7 @@ pop dx
 mov cx,512
 div cx   ; ax,dx -> 商，余数
 cmp dx,0 ; 如果余数为0，给商加1
-jz cmm   
+jnz cmm   
   inc ax
 cmm: cmp ax,0
 jz read_over

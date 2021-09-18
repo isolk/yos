@@ -20,18 +20,19 @@ void time_handler()
 
     write_port_b(0x20, 0x20);
     write_port_b(0xa0, 0x20);
-    print_char("t");
-    // asm("xchg %bx,%bx");
-    // // 判断当前任务号，使用jmp切换
-    // if (cur_task == 0){
-    //     cur_task = 1;
-    //     asm("jmp $0x30,$0");
-    // }else 
-    // {
-    //     cur_task = 0;
-    //     asm("jmp $0x28,$0");
-    // }
-    
+
+    // 判断当前任务号，使用jmp切换
+    if (cur_task == 0){
+        cur_task = 1;
+        // print_char('*');
+        // asm("xchg %bx,%bx");
+        asm("jmp $0x30,$0");
+    }else {
+        cur_task = 0;
+        // print_char('#');
+        // asm("xchg %bx,%bx");
+        asm("jmp $0x28,$0");
+    }
 }
 
 void show_c()
@@ -98,5 +99,9 @@ void default_handler()
 
 void syscall_handler()
 {
-    print_char('@');
+    if (cur_task == 0){
+        print_char('0');
+    }else {
+        print_char('1');
+    }
 }

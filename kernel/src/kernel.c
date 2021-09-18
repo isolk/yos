@@ -33,12 +33,14 @@ int _start()
     // 创建2个tss段，任务1和2的tss，占据5-6段。
     tss* t = new_tss();
     init_tss1(t);
-    init_gdt_tss(new_gdt(),t,103);
-    // t = new_tss();
-    // init_tss1(t);
-    // init_gdt_tss(new_gdt(),new_tss(),104);
+    init_gdt_tss(new_gdt(),t,104);
+
+    t = new_tss();
+    init_tss2(t);
+    init_gdt_tss(new_gdt(),t,104);
 
     init_gdt_task(new_gdt(),0x28);
+
 
     // 设置gdtr的内容，然后加载gdtr
     // 但是此时cs ds值还没改
@@ -72,8 +74,7 @@ int _start()
     // 开启中断，现在开始，中段就会来了。
     sti();
 
-    asm("xchg %bx,%bx");
-    asm("jmpl $0x30,$0");
+    asm("jmpl $0x38,$0");
 
     for(;;){
         asm("hlt");
