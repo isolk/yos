@@ -81,13 +81,3 @@ int _start()
     }
     return 0;
 }
-
-void task1()
-{
-    print_string("task A",6);
-}
-
-void task2()
-{
-    print_string("task B",6);
-}

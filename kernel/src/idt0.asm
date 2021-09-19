@@ -111,10 +111,12 @@ syscall_handler_init:
     pushad
     cld
     push ds
+    push ax
     mov eax,0x10
     mov ds,ax
     mov es,ax
 
+    pop ax
     call syscall_handler
     pop eax
     mov ds,ax

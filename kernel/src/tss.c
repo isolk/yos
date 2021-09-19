@@ -6,7 +6,7 @@ int tss_index = 0;
 void tss_func2(){
     for (size_t i = 0; i < 10000000; i++)
     {
-        asm("int $0x80");
+        asm("mov $0,%ax;int $0x80");
         // print_char('1'); // tss_func2只会在用户态执行，print_char是定义在内核段，直接访问会抛出io异常！
     }
 }
@@ -14,7 +14,7 @@ void tss_func2(){
 void tss_func1(){
     for (size_t i = 0; i < 10000000; i++)
     {
-        asm("int $0x80");
+        asm("mov $1,%ax; int $0x80");
     }
 }
 
