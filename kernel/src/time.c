@@ -104,6 +104,7 @@ void syscall_handler()
     if (ax == 0){
          print_char('0');
     }else {
+        
          print_char('1');
     }
 }
