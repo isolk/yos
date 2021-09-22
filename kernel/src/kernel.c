@@ -6,6 +6,8 @@
 #include<page.h>
 #include<ldt.h>
 #include<tss.h>
+#include<stdarg.h>
+#include<string.h>
 
 extern struct  idt_pointer idt_ptr;
 void keyboard_handler_init();
@@ -20,7 +22,7 @@ int _start()
     cli();
 
     // 先打印hello，表示成功进入到这儿了。
-    print_string("hello",5);
+    // print_string("hello",5);
 
     // 分别设置gdt表的内核数据段和代码段 
     init_gdt_code(new_gdt(),0,0xFFFFFFFF);
@@ -72,9 +74,11 @@ int _start()
     load_idt_entry(0x80,(uint32_t)syscall_handler_init,0x08,0b11101110);
 
     // 开启中断，现在开始，中段就会来了。
-    sti();
+     cli();
 
-    asm("jmpl $0x38,$0");
+    // asm("jmpl $0x38,$0");
+
+    printf("hello,this is :%d",10);
 
     for(;;){
         asm("hlt");
