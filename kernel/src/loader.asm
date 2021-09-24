@@ -12,52 +12,7 @@ mov es,bx      ;
 mov bx,0       ; es:bx是数据在内存的缓存地址
 int 0x13       ; 磁盘中断
 
-; 先计算elf文件的总长度
-;mov eax,0x20 ; section header postion
-;mov bx,0x2e ; size of section headers
-;mov cx,0x30 ; number of section headers
 
-;0x34 program header start
-;0x2a     program header size
-;0x2c     program count
-
-mov ebx,[es:0x20] ; program header posstion
-
-mov ax,[es:0x2e] ; number of program header
-mov dx,[es:0x30]
-mul dx   ;dx:ax
-
-push dx
-push ax
-pop eax
-add ebx,eax
-
-push ebx
-pop ax
-pop dx
-mov cx,512
-div cx   ; ax,dx -> 商，余数
-cmp dx,0 ; 如果余数为0，给商加1
-jnz cmm   
-  inc ax
-cmm: cmp ax,0
-jz read_over
-  mov ah,0x02    ; 表示读取
-  mov ch,0       ; 磁道号
-  mov cl,5       ; 起始扇区号,当前已经读取了1+2+1=4扇区，所以从第五个扇区开始，注意，扇区号从1开始，不是0
-  mov dh,0       ; 磁头号
-  mov dl,0x80    ; 驱动号
-
-  mov bx,0x840   ; 
-  mov es,bx      ; 
-  mov bx,0       ; es:bx是数据在内存的缓存地址
-  int 0x13       ; 磁盘中断
-
-read_over: 
-
-;mov ax,0xb800
-;mov es,ax
-;mov byte [es:0],'@'
 
 ;---------------------进入保护模式----------------------------
 
@@ -80,9 +35,6 @@ mov dword [es:gdt_addr+20],0x00_cf_92_00
 
 lgdt [0x200+gdt_size]
 
-;mov ax,0x92
-;;or al,0000_0010B
-;out 0x92,al
 
 mov ax,0x1
 lmsw word ax
@@ -91,10 +43,12 @@ jmp dword 0x0008:flush+0x200+0x7c00
 
 [bits 32]
 flush:
+xchg bx,bx
 mov cx,0x10
 mov es,cx
 mov ds,cx
 mov ss,cx
+mov esp,4194304
 mov ebx,0xb8000
 mov byte [ebx+0x00],'l'
 mov byte [ebx+0x02],'o'
@@ -103,6 +57,42 @@ mov byte [ebx+0x06],'d'
 mov byte [ebx+0x08],'i'
 mov byte [ebx+0x0a],'g'
 
+mov ebx,[0x8200+0x20] ; program header posstion
+mov ax,[0x8200+0x2e] ; number of program header
+mov dx,[0x820+0x30]
+mul dx   ;dx:ax
+
+push dx
+push ax
+pop eax
+add ebx,eax
+
+push ebx
+pop ax
+pop dx
+mov cx,512
+div cx   ; ax,dx -> 商，余数
+cmp dx,0 ; 如果余数为0，给商加1
+jnz cmm   
+  inc ax
+cmm:
+
+mov cx,ax
+mov ax,3
+mov ebx,0x8200
+
+xchg bx,bx
+read:
+inc ax
+add ebx,0x200
+push ax
+push ebx
+call read_disk
+pop ebx
+pop ax
+loop read
+
+xchg bx,bx
 
 ;------------------加载内核代码段----------------------
 ; 0x34是程序段首地址，4字节
@@ -130,7 +120,67 @@ add esi,0x8200
 mov edi,[bx+0x08] ; 重定位内存地址 
 rep movsb 
 
+xchg bx,bx
 jmp [0x8200+0x18]
+hlt
+
+read_disk:
+push dx
+push cx
+
+push ax
+push ebx
+
+mov dx,0x1f3
+out dx,al       ; start，低8位
+
+mov dx,0x1f4
+mov al,ah
+out dx,al       ; 8-15
+
+mov dx,0x1f2
+mov al,1
+out dx,al       ; 读取扇区数
+
+mov dx,0x1f5
+mov al,0
+out dx,al       ; 16-23
+
+mov dx,0x1f6
+mov al,0xe0
+out dx,al       ; lba,master,24-27
+
+mov dx,0x1f7
+mov al,0x20
+out dx,al
+
+mov dx,0x1f7
+.waits:
+in al,dx
+and al,0x88
+cmp al,0x08
+jz go
+xchg bx,bx
+jmp .waits
+go:
+pop ebx
+mov cx,256
+mov dx,0x1f0
+
+cmp ebx,0xfe00
+jnz readw
+xchg bx,bx
+
+readw:
+in ax,dx
+mov [ebx],ax
+add ebx,2
+loop readw
+
+pop ax
+pop cx
+pop dx
+ret
 
 gdt_size dw 23
          dd 0x006000
