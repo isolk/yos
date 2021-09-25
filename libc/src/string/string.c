@@ -149,7 +149,16 @@ static inline void _out_char(char character, void* buffer, size_t idx, size_t ma
 {
   (void)buffer; (void)idx; (void)maxlen;
   if (character) {
-    print_char(character);
+    asm volatile("xchg %bx,%bx");
+    asm volatile(
+      "mov $1,%%ax;"
+      "mov %0,%%bl;"
+      "int $0x80;"
+      :
+      :"r"(character)
+      :"%ax","%bl"
+      );
+    // print_char(character);
   }
 }
 

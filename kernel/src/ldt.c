@@ -41,7 +41,7 @@ struct ldt_entry *new_ldt_begin()
     struct ldt_entry *result = &(ldt_tables[ldt_entry_index*3]);
     init_ldt_null(&(ldt_tables[ldt_entry_index*3]));
     init_ldt_code(&(ldt_tables[ldt_entry_index*3+1]),0,0xFFFFFFFF);
-    init_ldt_data(&(ldt_tables[ldt_entry_index*3+2]),4*1024*1024,1024);
+    init_ldt_data(&(ldt_tables[ldt_entry_index*3+2]),0,0xFFFFFFFF);
     ldt_entry_index++;
     return result;
 }

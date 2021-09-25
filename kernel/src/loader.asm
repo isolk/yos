@@ -43,7 +43,6 @@ jmp dword 0x0008:flush+0x200+0x7c00
 
 [bits 32]
 flush:
-xchg bx,bx
 mov cx,0x10
 mov es,cx
 mov ds,cx
@@ -81,7 +80,6 @@ mov cx,ax
 mov ax,3
 mov ebx,0x8200
 
-xchg bx,bx
 read:
 inc ax
 add ebx,0x200
@@ -92,7 +90,6 @@ pop ebx
 pop ax
 loop read
 
-xchg bx,bx
 
 ;------------------加载内核代码段----------------------
 ; 0x34是程序段首地址，4字节
@@ -120,7 +117,6 @@ add esi,0x8200
 mov edi,[bx+0x08] ; 重定位内存地址 
 rep movsb 
 
-xchg bx,bx
 jmp [0x8200+0x18]
 hlt
 
@@ -160,7 +156,6 @@ in al,dx
 and al,0x88
 cmp al,0x08
 jz go
-xchg bx,bx
 jmp .waits
 go:
 pop ebx
@@ -169,7 +164,6 @@ mov dx,0x1f0
 
 cmp ebx,0xfe00
 jnz readw
-xchg bx,bx
 
 readw:
 in ax,dx

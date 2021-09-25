@@ -100,11 +100,9 @@ void default_handler()
 void syscall_handler()
 {
     uint16_t ax = 0;
-    asm("mov %%ax,%0":"=r"(ax));
-    if (ax == 0){
-         print_char('0');
-    }else {
-        
-         print_char('1');
+    uint16_t bx = 0;
+    asm("mov %%ax,%0;mov %%bx,%1":"=r"(ax),"=r"(bx));
+    if (ax == 1){
+        print_char((char)bx);
     }
 }

@@ -74,11 +74,12 @@ int _start()
     load_idt_entry(0x80,(uint32_t)syscall_handler_init,0x08,0b11101110);
 
     // 开启中断，现在开始，中段就会来了。
-     cli();
+    cli();
 
-    // asm("jmpl $0x38,$0");
-
+    asm("xchg %bx,%bx");
     printf("hello,this is :%d",10);
+    asm("jmpl $0x38,$0");
+
 
     for(;;){
         asm("hlt");

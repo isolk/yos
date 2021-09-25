@@ -1,4 +1,5 @@
 #include <tss.h>
+#include <string.h>
 
 tss tss_tables[256];
 int tss_index = 0;
@@ -6,7 +7,9 @@ int tss_index = 0;
 void tss_func2(){
     for (size_t i = 0; i < 10000000; i++)
     {
-        asm("mov $0,%ax;int $0x80");
+        asm("xchg %bx,%bx");
+        printf("hello,this is :%d",10);
+        // asm("mov $0,%ax;int $0x80");
         // print_char('1'); // tss_func2只会在用户态执行，print_char是定义在内核段，直接访问会抛出io异常！
     }
 }
@@ -14,7 +17,9 @@ void tss_func2(){
 void tss_func1(){
     for (size_t i = 0; i < 10000000; i++)
     {
-        asm("mov $1,%ax; int $0x80");
+        asm("xchg %bx,%bx");
+        printf("hello,this is :%d",10);
+        // asm("mov $1,%ax; int $0x80");
     }
 }
 
@@ -28,13 +33,13 @@ void init_tss1(tss * t){
 
     t->eip = tss_func1;
     t->eflags = 0x200;
-    t->esp = 1023;
+    t->esp = 8*1024*1024+1024;
 
     // 0000 0000 0001 0000
     // 0000 0000 0001 1100
     // 01100
     t->ss0 = 0b10000;
-    t->esp0 = 4*1024*1024+1024;
+    t->esp0 = 4*1024*1024+4096;
 
     t->cs = 0b01111;
     t->es=0b10111;
@@ -52,7 +57,7 @@ void init_tss2(tss * t){
 
     t->eip = tss_func2;
     t->eflags = 0x200;
-    t->esp = 1023;
+    t->esp = 8*1024*1024+2048;
 
     // 0000 0000 0001 0000
     // 0000 0000 0001 1100
