@@ -47,7 +47,7 @@ mov cx,0x10
 mov es,cx
 mov ds,cx
 mov ss,cx
-mov esp,4194304
+mov esp,4161536
 mov ebx,0xb8000
 mov byte [ebx+0x00],'l'
 mov byte [ebx+0x02],'o'
