@@ -1,17 +1,16 @@
 ;------------------------------读取内核镜像--------------------------
 ; 1 boot.asm 2-3 loader.asm 4 kernel.c 的第一个扇区
-mov ah,0x02    ; 表示读取
-mov al,1       ; 要读取扇区数
-mov ch,0       ; 磁道号
-mov cl,4       ; 起始扇区号
-mov dh,0       ; 磁头号
-mov dl,0x80    ; 驱动号
+; mov ah,0x02    ; 表示读取
+; mov al,1       ; 要读取扇区数
+; mov ch,0       ; 磁道号
+; mov cl,4       ; 起始扇区号
+; mov dh,0       ; 磁头号
+; mov dl,0x80    ; 驱动号
 
-mov bx,0x820
-mov es,bx      ; 
-mov bx,0       ; es:bx是数据在内存的缓存地址
-int 0x13       ; 磁盘中断
-
+; mov bx,0x820
+; mov es,bx      ; 
+; mov bx,0       ; es:bx是数据在内存的缓存地址
+; int 0x13       ; 磁盘中断
 
 
 ;---------------------进入保护模式----------------------------
@@ -47,18 +46,15 @@ mov cx,0x10
 mov es,cx
 mov ds,cx
 mov ss,cx
-mov esp,4161536
-mov ebx,0xb8000
-mov byte [ebx+0x00],'l'
-mov byte [ebx+0x02],'o'
-mov byte [ebx+0x04],'d'
-mov byte [ebx+0x06],'d'
-mov byte [ebx+0x08],'i'
-mov byte [ebx+0x0a],'g'
+mov esp,0xc00000 ; 12M -> 内核栈地址 内核 1-11 
 
-mov ebx,[0x8200+0x20] ; program header posstion
-mov ax,[0x8200+0x2e] ; number of program header
-mov dx,[0x820+0x30]
+mov ax,3
+mov ebx,0x1400000 ; 20M -> image从磁盘读取时缓存地址
+call read_disk
+
+mov ebx,[0x1400000+0x20] ; program header posstion
+mov ax,[0x1400000+0x2e] ; number of program header
+mov dx,[0x1400000+0x30]
 mul dx   ;dx:ax
 
 push dx
@@ -78,7 +74,7 @@ cmm:
 
 mov cx,ax
 mov ax,3
-mov ebx,0x8200
+mov ebx,0x1400000
 
 read:
 inc ax
@@ -101,23 +97,26 @@ loop read
 ;mov eax,[bx+14] ; 程序长度
 ;mov eax,[bx+20] ; 字节对齐
 
-mov bx,0x8200+0x34
+xchg bx,bx
+mov ebx,0x1400000+0x34
 cld
-mov ecx,[bx+0x10] ; 文件中长度
-mov esi,[bx+0x04] ; 文件偏移
-add esi,0x8200
-mov edi,[bx+0x08] ; 重定位内存地址 
+mov ecx,[ebx+0x10] ; 文件中长度
+mov esi,[ebx+0x04] ; 文件偏移
+add esi,0x1400000
+mov edi,[ebx+0x08] ; 重定位内存地址 
 rep movsb 
 
-mov bx,0x8200+0x34+32
+xchg bx,bx
+mov ebx,0x1400000+0x34+32
 cld
-mov ecx,[bx+0x10] ; 文件中长度
-mov esi,[bx+0x04] ; 文件偏移
-add esi,0x8200
-mov edi,[bx+0x08] ; 重定位内存地址 
+mov ecx,[ebx+0x10] ; 文件中长度
+mov esi,[ebx+0x04] ; 文件偏移
+add esi,0x1400000
+mov edi,[ebx+0x08] ; 重定位内存地址 
 rep movsb 
 
-jmp [0x8200+0x18]
+xchg bx,bx
+jmp [0x1400000+0x18]
 hlt
 
 read_disk:

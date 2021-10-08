@@ -18,11 +18,12 @@ void put_char_init();
 
 int _start()
 {
+    asm("xchg %bx,%bx");
     // 测试代码，先屏蔽中断。
     cli();
 
     // 先打印hello，表示成功进入到这儿了。
-    // print_string("hello",5);
+    print_string("hello",5);
 
     // 分别设置gdt表的内核数据段和代码段 
     init_gdt_code(new_gdt(),0,0xFFFFFFFF);
