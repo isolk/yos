@@ -86,7 +86,7 @@ local:
 
 global init_page:
 init_page:
-    mov eax,0x003fe000                 ;PCD=PWT=0
+    mov eax,0                 ;PCD=PWT=0
     mov cr3,eax
 
     mov eax,cr0

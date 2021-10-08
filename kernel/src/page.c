@@ -24,15 +24,15 @@ struct page_entry
 // 0-4k 页目录
 // 内核的页表
 
-struct page_entry *paget_dir = (struct page_entry *)(0); // 设置地址为4MB-8K
+struct page_entry *paget_dir = (struct page_entry *)(0); // 设置地址为0
 // 内核的页表
-struct page_entry *paget_table = (struct page_entry *)(4*K); // 设置地址为4MB-4k
+struct page_entry *paget_table = (struct page_entry *)(4*K); // 设置地址为4k
 
 // 在此代码执行之时，内核被loader加载到物理地址的1-11M处。将内核所占用的物理地址(0-11M）映射到虚拟地址中，其他地址设置为页不存在。
 void InitPageDir()
 {
     //0-1024，每一个dir项包含1024个地址映射，也就是1024*4KB=4MB。 内核放在第0-11M，也就是第1-3个direntry处
-    for (size_t i = 1; i < 1*K; i++)
+    for (size_t i = 0; i < 1*K; i++)
     {
         paget_dir[i].data = 0;
     }
@@ -42,7 +42,6 @@ void InitPageDir()
     paget_dir[0].data = ptr|0x3;
     paget_dir[1].data = (ptr+4*K)|0x3;
     paget_dir[2].data = (ptr+8*K)|0x3;
-    paget_dir[1023].data = ((uint32_t)paget_dir)|0x3;
 }
 
 void InitPageTable()
