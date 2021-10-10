@@ -97,7 +97,6 @@ loop read
 ;mov eax,[bx+14] ; 程序长度
 ;mov eax,[bx+20] ; 字节对齐
 
-xchg bx,bx
 mov ebx,0x1400000+0x34
 cld
 mov ecx,[ebx+0x10] ; 文件中长度
@@ -106,7 +105,6 @@ add esi,0x1400000
 mov edi,[ebx+0x08] ; 重定位内存地址 
 rep movsb 
 
-xchg bx,bx
 mov ebx,0x1400000+0x34+32
 cld
 mov ecx,[ebx+0x10] ; 文件中长度
@@ -115,7 +113,6 @@ add esi,0x1400000
 mov edi,[ebx+0x08] ; 重定位内存地址 
 rep movsb 
 
-xchg bx,bx
 jmp [0x1400000+0x18]
 hlt
 

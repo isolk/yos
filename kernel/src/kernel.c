@@ -18,7 +18,6 @@ void put_char_init();
 
 int _start()
 {
-    asm("xchg %bx,%bx");
     // 测试代码，先屏蔽中断。
     cli();
 
@@ -58,6 +57,7 @@ int _start()
     // 初始化中断控制器工作方式
     init_pic();
     init_idtr();
+    asm("xchg %bx,%bx");
     load_idt(&idt_ptr);
     for (size_t i = 0; i < 256; i++)
     {
@@ -74,11 +74,9 @@ int _start()
 
     load_idt_entry(0x80,(uint32_t)syscall_handler_init,0x08,0b11101110);
 
-    asm("xchg %bx,%bx");
     InitPageTable();
     InitPageDir();
     init_page();
-    asm("xchg %bx,%bx");
     // 开启中断，现在开始，中段就会来了。
     cli();
 

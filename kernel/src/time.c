@@ -25,12 +25,10 @@ void time_handler()
     if (cur_task == 0){
         cur_task = 1;
         // print_char('*');
-        // asm("xchg %bx,%bx");
         asm("jmp $0x30,$0");
     }else {
         cur_task = 0;
         // print_char('#');
-        // asm("xchg %bx,%bx");
         asm("jmp $0x28,$0");
     }
 }
@@ -43,7 +41,6 @@ void show_c()
 }
 
 void show_time(){
-    asm volatile ("xchg %bx,%bx");
     asm volatile ("mov %ds, %eax");
     asm volatile ("push %ax");
     uint16_t ds=echo();
@@ -91,7 +88,6 @@ void default_handler()
     // write_port_b(0x70,0x0c);
     // read_port_b(0x71);
 
-    // asm("xchg %bx,%bx");
     // write_port_b(0x20, 0x20);
     // write_port_b(0xa0, 0x20);
     // print_char('*');
