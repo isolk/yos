@@ -29,8 +29,6 @@ void ll();
 
 void init_gdt_pointer();
 
-void put_char_c(size_t row,size_t column,uint8_t str);
-
 void init_gdt_data(struct gdt_entry* l,uint32_t addr, uint32_t limit);
 
 void init_gdt_code(struct gdt_entry* l,uint32_t addr, uint32_t limit);

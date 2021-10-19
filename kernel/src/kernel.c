@@ -8,13 +8,14 @@
 #include<tss.h>
 #include<stdarg.h>
 #include<string.h>
+#include<disk.h>
+#include<elf.h>
 
 extern struct  idt_pointer idt_ptr;
 void keyboard_handler_init();
 void default_handler_init();
 void syscall_handler_init();
 void time_handler_init();
-void put_char_init();
 
 int _start()
 {
@@ -57,7 +58,6 @@ int _start()
     // 初始化中断控制器工作方式
     init_pic();
     init_idtr();
-    asm("xchg %bx,%bx");
     load_idt(&idt_ptr);
     for (size_t i = 0; i < 256; i++)
     {
@@ -70,17 +70,24 @@ int _start()
 
     // 设置键盘中断,以及初始化键盘操作
     load_idt_entry(0x21,(uint32_t)keyboard_handler_init,0x08,0x8e);
-    init_keyboard();
+    // init_keyboard();
 
     load_idt_entry(0x80,(uint32_t)syscall_handler_init,0x08,0b11101110);
 
     InitPageTable();
     InitPageDir();
-    init_page();
+    // init_page();
     // 开启中断，现在开始，中段就会来了。
-    cli();
+    // cli();
 
-    printf("hello,this is :%d",10);
+    print_string("hello2",6);
+    asm("xchg %bx,%bx");
+    read_disk(1,0x100,(uint8_t)1);
+    print_string("hello3",6);
+
+    asm("xchg %bx,%bx");
+    read_elf(0x100,4*1024*1024); // 用户程序放在20+4MB处
+    // printf("hello,this is :%d",10);
     // asm("jmpl $0x38,$0");
 
 

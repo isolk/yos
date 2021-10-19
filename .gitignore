@@ -10,4 +10,4 @@ system/libsys.a
 kernel/bin/disk.img
 kernel/obj/*.bin
 kernel/obj/*.o
-.vscode/*
+k.sym

@@ -12,6 +12,19 @@ read_port_b:
 	pop	ebp
     ret
 
+global read_port_w
+read_port_w:
+    push	ebp
+	mov	ebp, esp
+    push dx
+
+    mov dx,[ebp+8]  ; 端口号
+    in ax,dx        ; 读入2字节
+
+    pop dx
+	pop	ebp
+    ret
+
 global write_port_b
 write_port_b:
     push	ebp

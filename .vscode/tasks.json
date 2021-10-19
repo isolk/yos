@@ -1,0 +1,18 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build",
+            "type":"shell",
+            "command": "qemu-system-i386 -no-reboot -no-shutdown -s -S -drive file=kernel/bin/disk.img,format=raw,index=0,media=disk",
+            "isBackground": true,
+            "presentation": {
+                "echo": true,
+                "clear": true,
+                "group": "vm"
+              }
+        }
+    ]
+}

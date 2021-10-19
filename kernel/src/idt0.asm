@@ -30,24 +30,6 @@ time_handler_init:
     popad
     iretd
 
-global put_char_init
-extern put_char
-put_char_init:
-   push	ebp
-	mov	ebp, esp
-
-    push dword [ebp+0x14]
-    push dword [ebp+0x10]
-    push dword [ebp+0x0c]
-
-    call put_char
-    
-    add esp,0x0c
-
-    mov esp,ebp
-	pop	ebp 
-    retf
-
 global sti
 sti:
     sti
@@ -64,22 +46,6 @@ lgdtr:
     lgdt [edx]
     ret
 
-global put_char_c
-put_char_c:
-    push	ebp
-	mov	ebp, esp
-
-    push dword [ebp+0x10]
-    push dword [ebp+0x0c]
-    push dword [ebp+0x08]
-
-    call far [local]
-    
-    add esp,0x0c
-
-    mov esp,ebp
-	pop	ebp
-    ret
 local:
     dd 0
     dw 0x18
