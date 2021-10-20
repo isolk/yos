@@ -13,8 +13,8 @@ bin/disk.img: obj/yos.bin obj/boot.bin obj/loader.bin
 	@truncate -s 1M bin/disk.img
 	@dd bs=512 count=1 if=obj/boot.bin of=bin/disk.img seek=0 conv=notrunc >/dev/null 2>&1
 	@dd bs=512 count=2 if=obj/loader.bin of=bin/disk.img seek=1 conv=notrunc >/dev/null 2>&1
-	@dd bs=512 count=1000 if=obj/yos.bin of=bin/disk.img seek=3 conv=notrunc >/dev/null 2>&1
-	@dd bs=512 count=20 if=../user/hello of=bin/disk.img seek=1003 conv=notrunc >/dev/null 2>&1
+	@dd bs=512 count=993 if=obj/yos.bin of=bin/disk.img seek=3 conv=notrunc >/dev/null 2>&1
+	@dd bs=512 count=128 if=../user/hello of=bin/disk.img seek=1000 conv=notrunc >/dev/null 2>&1
 
 obj/yos.bin: $(OBJ_C) $(OBJ_ASM)
 	i686-elf-gcc -g -T obj/linker.ld -o obj/yos.bin -ffreestanding -O1 -nostdlib $^ -lgcc -L $(LIBSTD) -lstd  -L $(LIBSYS) -lsys
