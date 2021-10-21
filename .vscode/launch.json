@@ -9,9 +9,10 @@
             "type": "cppdbg",
             "request": "launch",
             //"miDebuggerServerAddress": "192.168.137.3:1234",
-            "preLaunchTask":"quick_start",
+            "preLaunchTask": "quick_start",
             "miDebuggerServerAddress": "127.0.0.1:1234",
             "program": "${workspaceFolder}/kernel/obj/yos.bin",
+            // "program": "${workspaceFolder}/user/hello",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
@@ -21,6 +22,12 @@
                 "engineLogging": false
             },
             "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    // "text": "source ${workspaceFolder}/.gdbinit"
+                    "text": "add-symbol-file ${workspaceFolder}/user/hello"
+                }
+            ]
         }
     ]
 }
