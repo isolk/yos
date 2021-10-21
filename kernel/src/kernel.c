@@ -83,7 +83,7 @@ int _start()
     print_string("hello3", 6);
 
     asm("xchg %bx,%bx");
-    read_elf(0x7d000, 4 * 1024 * 1024); // 用户程序放在20+4MB处
+    read_elf(0x7d000); // 用户程序放在20+4MB处
 
     // asm("jmpl $0x38,$0");
 

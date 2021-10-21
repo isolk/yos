@@ -1,7 +1,7 @@
 LIBSTD=$(HOME)/yos/libc
 LIBSYS=$(HOME)/yos/system
 cc = i686-elf-gcc
-CFLAGS = -g -c -std=gnu99 -ffreestanding -O1 -Wall -Wextra  -I include -I $(LIBSTD)/include -I $(LIBSYS)/include 
+CFLAGS = -g -c -std=gnu99 -ffreestanding -O0 -Wall -Wextra  -I include -I $(LIBSTD)/include -I $(LIBSYS)/include 
 SRC_C = $(wildcard src/*.c)
 OBJ_C=$(patsubst %.c,obj/%.o,$(notdir $(SRC_C)))
 
@@ -17,7 +17,7 @@ bin/disk.img: obj/yos.bin obj/boot.bin obj/loader.bin
 	@dd bs=512 count=128 if=../user/hello of=bin/disk.img seek=1000 conv=notrunc >/dev/null 2>&1
 
 obj/yos.bin: $(OBJ_C) $(OBJ_ASM)
-	i686-elf-gcc -g -T obj/linker.ld -o obj/yos.bin -ffreestanding -O1 -nostdlib $^ -lgcc -L $(LIBSTD) -lstd  -L $(LIBSYS) -lsys
+	i686-elf-gcc -g -T obj/linker.ld -o obj/yos.bin -ffreestanding -O0 -nostdlib $^ -lgcc -L $(LIBSTD) -lstd  -L $(LIBSYS) -lsys
 obj/boot.bin: src/boot.asm
 	@nasm -o obj/boot.bin src/boot.asm
 obj/loader.bin: src/loader.asm
