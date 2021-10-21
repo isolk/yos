@@ -27,5 +27,5 @@ void read_elf(elf_fh *s_addr)
 
 void cp_elf(elf_ph *ph)
 {
-	cp(ph->offset + 0x7d000, ph->vaddr + 1024 * 1024, ph->filesz);
+	cp(ph->offset + 0x7d000, ph->vaddr, ph->filesz);
 }

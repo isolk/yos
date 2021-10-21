@@ -38,9 +38,9 @@ int _start()
     init_tss1(t);
     init_gdt_tss(new_gdt(), t, 104);
 
-    t = new_tss();
-    init_tss2(t);
-    init_gdt_tss(new_gdt(), t, 104);
+    tss *t2 = new_tss();
+    init_tss2(t2);
+    init_gdt_tss(new_gdt(), t2, 104);
 
     init_gdt_task(new_gdt(), 0x28);
 
@@ -76,16 +76,15 @@ int _start()
     InitPageDir();
     // init_page();
     // 开启中断，现在开始，中段就会来了。
-    // cli();
+    cli();
 
-    print_string("hello2", 6);
     read_disk(1000, 0x7d000, (uint8_t)128);
-    print_string("hello3", 6);
 
     asm("xchg %bx,%bx");
-    read_elf(0x7d000); // 用户程序放在20+4MB处
+    read_elf(0x7d000); // 用户程序放在21MB处
+    t->eip = 20 * 1024 * 1024 + 0;
 
-    // asm("jmpl $0x38,$0");
+    asm("jmpl $0x38,$0");
 
     for (;;)
     {
