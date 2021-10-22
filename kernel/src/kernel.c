@@ -68,7 +68,7 @@ int _start()
 
     // 设置键盘中断,以及初始化键盘操作
     load_idt_entry(0x21, (uint32_t)keyboard_handler_init, 0x08, 0x8e);
-    // init_keyboard();
+    init_keyboard();
 
     load_idt_entry(0x80, (uint32_t)syscall_handler_init, 0x08, 0b11101110);
 
@@ -76,7 +76,7 @@ int _start()
     InitPageDir();
     // init_page();
     // 开启中断，现在开始，中段就会来了。
-    cli();
+    sti();
 
     read_disk(1000, 0x7d000, (uint8_t)128);
 
