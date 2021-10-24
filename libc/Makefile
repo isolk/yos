@@ -1,5 +1,6 @@
 CC = i686-elf-gcc
-CFLAGS = -g -c -std=gnu99 -ffreestanding -O0 -Wall -Wextra  -I include
+LIBSYS=$(HOME)/yos/system
+CFLAGS = -g -c -std=gnu99 -ffreestanding -O0 -Wall -Wextra  -I include -I $(LIBSYS)/include
 
 SRC_C = $(wildcard src/*/*.c)
 

@@ -1,6 +1,7 @@
 {
 	"files.associations": {
 		"elf.h": "c",
-		"mem.h": "c"
+		"mem.h": "c",
+		"stdlib.h": "c"
 	}
 }
