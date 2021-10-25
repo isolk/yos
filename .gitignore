@@ -12,3 +12,4 @@ kernel/obj/*.bin
 kernel/obj/*.o
 k.sym
 user/hello
+user/hello.o

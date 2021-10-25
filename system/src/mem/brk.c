@@ -1,15 +1,16 @@
 #include "mem.h"
 
 void *_s = 24 * 1024 * 1024;
-void *_end = 0;
-void *brk(const void *addr)
+void *_end = 24 * 1024 * 1024;
+int brk(const void *addr)
 {
 	_end = addr;
-	return _end;
+	return 1;
 }
 
 void *sbrk(int incr)
 {
-	_end = _s + incr;
-	return _end;
+	void *t = _end;
+	_end += incr;
+	return t;
 }
