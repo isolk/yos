@@ -10,3 +10,4 @@ typedef struct malloc_chunk
 } malloc_chunk;
 
 void *malloc(size_t size);
+void free(void *addr);

@@ -14,10 +14,9 @@ void malloc_init()
 	end = brk(begin + init_size);
 	start = begin;
 
-	malloc_chunk *st = begin;
 	for (size_t i = 0; i < 16 * 4; i++)
 	{
-		st = ((void *)st) + 64 * i;
+		malloc_chunk *st = (void *)begin + 64 * i;
 		st->size = 64;
 		st->free = 1;
 	}
@@ -42,4 +41,21 @@ void *malloc(size_t size)
 	}
 
 	return NULL;
+}
+
+void free(void *addr)
+{
+	for (malloc_chunk *begin = start; begin != end; begin = (void *)begin + begin->size)
+	{
+		if (begin->free)
+		{
+			continue;
+		}
+		if (addr != (void *)begin + 5)
+		{
+			continue;
+		}
+		begin->free = 1;
+		return;
+	}
 }

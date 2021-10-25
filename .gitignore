@@ -11,3 +11,4 @@ kernel/bin/disk.img
 kernel/obj/*.bin
 kernel/obj/*.o
 k.sym
+user/hello

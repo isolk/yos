@@ -2,6 +2,7 @@
 	"files.associations": {
 		"elf.h": "c",
 		"mem.h": "c",
-		"stdlib.h": "c"
+		"stdlib.h": "c",
+		"stddef.h": "c"
 	}
 }
