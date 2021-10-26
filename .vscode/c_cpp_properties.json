@@ -3,15 +3,15 @@
         {
             "name": "Mac",
             "includePath": [
-                "${default}",
-                "system/include",
-                "libc/include",
-                "${workspaceFolder}/kernel/include"
+                "${workspaceFolder}/kernel/include",
+                "${workspaceFolder}/system/include",
+                "${workspaceFolder}/libc/include",
+                "/usr/local/Cellar/i686-elf-gcc/11.2.0/lib/gcc/i686-elf/11.2.0/include"
             ],
-            "compilerPath": "/usr/bin/clang",
-            "cStandard": "c17",
+            "compilerPath": "/usr/local/bin/i686-elf-gcc",
+            "cStandard": "c99",
             "cppStandard": "c++98",
-            "intelliSenseMode": "macos-clang-x64"
+            "intelliSenseMode": "macos-gcc-x86"
         }
     ],
     "version": 4

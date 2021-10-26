@@ -1,2 +1,2 @@
-#include<stdint.h>
+#include<stdint-gcc.h>
 #include<stddef.h>

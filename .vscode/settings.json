@@ -12,6 +12,9 @@
 		"sstream": "c",
 		"string": "c",
 		"string_view": "c",
-		"__locale": "c"
+		"__locale": "c",
+		"idt.h": "c",
+		"stdint-gcc.h": "c",
+		"stdint-gcc.h": "c"
 	}
 }

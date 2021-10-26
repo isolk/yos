@@ -89,7 +89,7 @@ syscall_handler_init:
     mov es,ax
 
     popad
-    iret
+    iretd
 
 global default_handler_init
 extern default_handler
@@ -98,4 +98,20 @@ default_handler_init:
     cld
     call default_handler
     popad
-    iret
+    iretd
+
+global page_handler_init
+extern page_handler
+page_handler_init:
+    mov eax,cr2
+    push eax
+    call page_handler
+    add esp,8
+    iretd
+
+global i_hander_13
+extern i_hander_13_do
+i_hander_13:
+    call i_hander_13_do
+    add esp,4
+    iretd

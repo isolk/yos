@@ -1,5 +1,5 @@
 #include<stddef.h>
-#include<stdint.h>
+#include<stdint-gcc.h>
 
 struct ldt_entry
 {

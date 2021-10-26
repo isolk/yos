@@ -1,6 +1,6 @@
 #include <elf.h>
 #include <stddef.h>
-#include <stdint.h>
+#include <stdint-gcc.h>
 #include <mem.h>
 
 elf main_elf;

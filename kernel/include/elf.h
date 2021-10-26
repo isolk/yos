@@ -1,5 +1,5 @@
 #include <stddef.h>
-#include <stdint.h>
+#include <stdint-gcc.h>
 
 // https://en.wikipedia.org/wiki/Executable_and_Linkable_Format
 typedef struct elf_fh

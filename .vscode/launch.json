@@ -27,7 +27,10 @@
                     // "text": "source ${workspaceFolder}/.gdbinit"
                     "text": "add-symbol-file ${workspaceFolder}/user/hello"
                 }
-            ]
+            ],
+            "sourceFileMap": {
+                "src": "${workspaceFolder}/kernel/src"
+            }
         }
     ]
 }

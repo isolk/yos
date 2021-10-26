@@ -10,10 +10,12 @@
 #include <string.h>
 #include <disk.h>
 #include <elf.h>
+#include <time.h>
 
 extern struct idt_pointer idt_ptr;
 void keyboard_handler_init();
 void default_handler_init();
+void page_handler_init();
 void syscall_handler_init();
 void time_handler_init();
 
@@ -57,10 +59,18 @@ int _start()
     init_pic();
     init_idtr();
     load_idt(&idt_ptr);
-    for (size_t i = 0; i < 256; i++)
+    for (size_t i = 0; i < 32; i++)
+    {
+        load_idt_entry(i, (uint32_t)handlers[i], 0x08, 0x8e);
+    }
+
+    for (size_t i = 32; i < 256; i++)
     {
         load_idt_entry(i, (uint32_t)default_handler_init, 0x08, 0x8e);
     }
+
+    // 缺页处理
+    load_idt_entry(14, (uint32_t)page_handler_init, 0x08, 0x8e);
 
     // 初始化时间的端口设置,设置时间中断
     init_time();
@@ -74,15 +84,15 @@ int _start()
 
     InitPageTable();
     InitPageDir();
-    // init_page();
-    // 开启中断，现在开始，中段就会来了。
     sti();
 
     read_disk(1000, 0x7d000, (uint8_t)128);
 
-    asm("xchg %bx,%bx");
     read_elf(0x7d000); // 用户程序放在21MB处
     t->eip = 20 * 1024 * 1024 + 0;
+
+    init_page();
+    // 开启中断，现在开始，中段就会来了。
 
     asm("jmpl $0x38,$0");
 

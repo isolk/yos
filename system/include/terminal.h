@@ -1,4 +1,4 @@
-#include <stdint.h>
+#include <stdint-gcc.h>
 #include <stddef.h>
 void put_char(size_t row,size_t column,uint8_t str);
 void clear();
