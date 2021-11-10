@@ -19,10 +19,25 @@ void page_handler_init();
 void syscall_handler_init();
 void time_handler_init();
 
+// 比实际情况可能会少1M，不考虑这1M了
+void print_mem()
+{
+    uint16_t *ptr_page_64k = 0x7c00 - 20;
+    uint32_t high_mem = *ptr_page_64k * 64 / 1024;
+
+    uint16_t *ptr_page_1k = 0x7c00 - 10;
+    uint32_t low_mem = *ptr_page_1k / 1024;
+
+    printf("mem is %d MB", low_mem + high_mem + 1);
+}
+
 int _start()
 {
+    // 打印内存容量
     // 测试代码，先屏蔽中断。
     cli();
+
+    print_mem();
 
     // 先打印hello，表示成功进入到这儿了。
     print_string("hello", 5);
@@ -84,7 +99,6 @@ int _start()
 
     InitPageTable();
     InitPageDir();
-    sti();
 
     read_disk(1000, 0x7d000, (uint8_t)128);
 
@@ -94,7 +108,7 @@ int _start()
     init_page();
     // 开启中断，现在开始，中段就会来了。
 
-    asm("jmpl $0x38,$0");
+    // asm("jmpl $0x38,$0");
 
     for (;;)
     {
