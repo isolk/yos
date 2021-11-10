@@ -15,6 +15,5 @@
 		"__locale": "c",
 		"idt.h": "c",
 		"stdint-gcc.h": "c",
-		"stdint-gcc.h": "c"
 	}
 }
