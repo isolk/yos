@@ -1,6 +1,1 @@
-
-void InitPageDir();
-
-void InitPageTable();
-
-void init_page();
+void init_page_all();

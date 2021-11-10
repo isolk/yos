@@ -1,5 +1,6 @@
 #include <stdint-gcc.h>
 #include <stddef.h>
+#include "page.h"
 // ADDR(20)|AVL(3)|G|0(PAT)|D|A|PCD|PWT|US|RW|P
 // p 页存在 1
 // rw 可读/可写 1
@@ -23,14 +24,26 @@ struct page_entry
 // 0-4k 页目录
 // 内核的页表
 
-struct page_entry *paget_dir = (struct page_entry *)(0); // 设置地址为0
+struct page_entry *paget_dir = 0;
 // 内核的页表
-struct page_entry *paget_table = (struct page_entry *)(4 * K); // 设置地址为4k
+struct page_entry *paget_table = 0;
+
+void init_page_all()
+{
+    init_page_dir();
+    init_page_table();
+    init_page(paget_dir);
+}
 
 // 在此代码执行之时，内核被loader加载到物理地址的1-11M处。将内核所占用的物理地址(0-11M）映射到虚拟地址中，其他地址设置为页不存在。
-void InitPageDir()
+void init_page_dir()
 {
-    //0-1024，每一个dir项包含1024个地址映射，也就是1024*4KB=4MB。 内核放在第0-11M，也就是第1-3个direntry处
+    uint32_t *len = 0x7c00 - 30;
+    uint32_t size = *len;
+    uint32_t page_size = size / 4096 + 1;
+    paget_dir = page_size * 4096;
+    paget_table = paget_dir + K;
+    // 0-1024，每一个dir项包含1024个地址映射，也就是1024*4KB=4MB。 内核放在第0-11M，也就是第1-3个direntry处
     for (size_t i = 0; i < 1 * K; i++)
     {
         paget_dir[i].data = 0;
@@ -43,7 +56,7 @@ void InitPageDir()
     paget_dir[2].data = (ptr + 8 * K) | 0x3;
 }
 
-void InitPageTable()
+void init_page_table()
 {
     //对于内核空间，进行相同映射。也就是对于地址小于12MB的线性地址，全部映射成相同的物理地址.
     for (size_t i = 0; i < 3 * K; i++)

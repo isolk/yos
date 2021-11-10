@@ -37,10 +37,9 @@ int _start()
     // 测试代码，先屏蔽中断。
     cli();
 
-    print_mem();
+    printf("hello,world!  ~!~  ");
 
-    // 先打印hello，表示成功进入到这儿了。
-    print_string("hello", 5);
+    print_mem();
 
     // 分别设置gdt表的内核数据段和代码段
     init_gdt_code(new_gdt(), 0, 0xFFFFFFFF);
@@ -97,17 +96,15 @@ int _start()
 
     load_idt_entry(0x80, (uint32_t)syscall_handler_init, 0x08, 0b11101110);
 
-    InitPageTable();
-    InitPageDir();
-
     read_disk(1000, 0x7d000, (uint8_t)128);
 
     read_elf(0x7d000); // 用户程序放在21MB处
     t->eip = 20 * 1024 * 1024 + 0;
 
-    init_page();
+    init_page_all();
     // 开启中断，现在开始，中段就会来了。
 
+    printf("ok,let's go to task 1!");
     // asm("jmpl $0x38,$0");
 
     for (;;)

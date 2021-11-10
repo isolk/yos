@@ -113,6 +113,11 @@ add esi,0x1400000
 mov edi,[ebx+0x08] ; 重定位内存地址 
 rep movsb 
 
+; 将内核的结束位置放在固定内存里供内核使用
+mov eax,[ebx+0x08]
+add eax,[ebx+0x14]
+mov [0x7c00-30],eax
+
 jmp [0x1400000+0x18]
 hlt
 
