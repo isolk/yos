@@ -51,6 +51,7 @@ local:
 
 global init_page:
 init_page:
+    xchg bx,bx
     mov eax,[esp+4]                 ;PCD=PWT=0
     mov cr3,eax
 

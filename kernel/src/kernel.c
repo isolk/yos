@@ -105,7 +105,8 @@ int _start()
     // 开启中断，现在开始，中段就会来了。
 
     printf("ok,let's go to task 1!");
-    // asm("jmpl $0x38,$0");
+    asm("xchg %bx,%bx");
+    asm("jmpl $0x38,$0");
 
     for (;;)
     {

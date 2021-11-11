@@ -19,6 +19,7 @@ struct page_entry
 };
 
 #define K 1024
+#define K4 4096
 
 // 内核：1-11M
 // 0-4k 页目录
@@ -46,22 +47,18 @@ void init_page_dir()
     // 0-1024，每一个dir项包含1024个地址映射，也就是1024*4KB=4MB。 内核放在第0-11M，也就是第1-3个direntry处
     for (size_t i = 0; i < 1 * K; i++)
     {
-        paget_dir[i].data = 0;
+        uint32_t ptr = (uint32_t)paget_table;
+        ptr = ptr & 0xFFFFF000; // 清零低12位
+        paget_dir[i].data = (ptr + i * K4) | 0x7;
     }
-
-    uint32_t ptr = (uint32_t)paget_table;
-    ptr = ptr & 0xFFFFF000; // 清零低12位
-    paget_dir[0].data = ptr | 0x3;
-    paget_dir[1].data = (ptr + 4 * K) | 0x3;
-    paget_dir[2].data = (ptr + 8 * K) | 0x3;
 }
 
 void init_page_table()
 {
     //对于内核空间，进行相同映射。也就是对于地址小于12MB的线性地址，全部映射成相同的物理地址.
-    for (size_t i = 0; i < 3 * K; i++)
+    for (size_t i = 0; i < 32 * K4; i++)
     {
         uint32_t ptr = (uint32_t)(i << 12);
-        paget_table[i].data = ptr | 0x3;
+        paget_table[i].data = ptr | 0x7;
     }
 }

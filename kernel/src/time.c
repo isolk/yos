@@ -91,12 +91,12 @@ void show_time()
 
 void default_handler()
 {
-    // write_port_b(0x70,0x0c);
-    // read_port_b(0x71);
+    write_port_b(0x70, 0x0c);
+    read_port_b(0x71);
 
-    // write_port_b(0x20, 0x20);
-    // write_port_b(0xa0, 0x20);
-    // print_char('*');
+    write_port_b(0x20, 0x20);
+    write_port_b(0xa0, 0x20);
+    print_char('*');
 }
 
 #define is_user(err_code) (err_code & 0x04)
