@@ -15,5 +15,7 @@
 		"__locale": "c",
 		"idt.h": "c",
 		"stdint-gcc.h": "c",
+		"string.h": "c",
+		"interrupt.h": "c"
 	}
 }

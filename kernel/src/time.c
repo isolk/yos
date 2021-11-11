@@ -22,11 +22,12 @@ void time_handler()
     write_port_b(0x20, 0x20);
     write_port_b(0xa0, 0x20);
 
+    print_char('*');
+
     // 判断当前任务号，使用jmp切换
     if (cur_task == 0)
     {
         cur_task = 1;
-        // print_char('*');
         asm("jmp $0x30,$0");
     }
     else
@@ -99,12 +100,20 @@ void default_handler()
     print_char('*');
 }
 
+#define is_present(err_code) (err_code & 0x01)
+#define is_write(err_code) (err_code & 0x02)
 #define is_user(err_code) (err_code & 0x04)
+#define is_struction(err_code) (err_code & 0x10)
 void page_handler(uint32_t cr2, uint32_t err_code)
 {
     int u = is_user(err_code);
+    int w = is_write(err_code);
+    int s = is_struction(err_code);
+    int p = is_present(err_code);
     if (u)
     {
-        // printf("errcode=%x,cr2=%x", err_code, cr2);
+        printf("errcode=%x,cr2=%x", err_code, cr2);
     }
+    write_port_b(0x20, 0x20);
+    write_port_b(0xa0, 0x20);
 }

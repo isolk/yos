@@ -37,4 +37,5 @@ typedef struct tss
 }__attribute__((packed)) tss;
 
 tss *new_tss();
-void init_tss1(tss * t);
+void init_tss1(tss * t,uint32_t cr3);
+void init_tss2(tss * t,uint32_t cr3);

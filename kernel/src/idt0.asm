@@ -45,13 +45,20 @@ lgdtr:
     lgdt [edx]
     ret
 
+global lldtr
+lldtr:
+    xchg bx,bx
+    mov dx,[esp+4]
+    lldt dx
+    ret
+
 local:
     dd 0
     dw 0x18
 
 global init_page:
 init_page:
-    xchg bx,bx
+    ; xchg bx,bx
     mov eax,[esp+4]                 ;PCD=PWT=0
     mov cr3,eax
 
@@ -113,5 +120,12 @@ global i_hander_13
 extern i_hander_13_do
 i_hander_13:
     call i_hander_13_do
+    add esp,4
+    iretd
+
+global i_hander_10
+extern i_hander_10_do
+i_hander_10:
+    call i_hander_10_do
     add esp,4
     iretd

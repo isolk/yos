@@ -13,3 +13,5 @@ kernel/obj/*.o
 k.sym
 user/hello
 user/hello.o
+user/hello
+user/hello.o

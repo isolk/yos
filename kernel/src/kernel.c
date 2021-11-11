@@ -49,16 +49,18 @@ int _start()
     init_gdt_ldt(new_gdt(), new_ldt_begin(), 24);
     init_gdt_ldt(new_gdt(), new_ldt_begin(), 24);
 
+    init_page_all();
+
     // 创建2个tss段，任务1和2的tss，占据5-6段。
     tss *t = new_tss();
-    init_tss1(t);
+    init_tss1(t, (uint32_t)paget_dir);
     init_gdt_tss(new_gdt(), t, 104);
 
     tss *t2 = new_tss();
-    init_tss2(t2);
+    init_tss2(t2, (uint32_t)paget_dir);
     init_gdt_tss(new_gdt(), t2, 104);
 
-    init_gdt_task(new_gdt(), 0x28);
+    init_gdt_task(new_gdt(), 0x30);
 
     // 设置gdtr的内容，然后加载gdtr
     // 但是此时cs ds值还没改
@@ -101,11 +103,14 @@ int _start()
     read_elf(0x7d000); // 用户程序放在21MB处
     t->eip = 20 * 1024 * 1024 + 0;
 
-    init_page_all();
+    lldt();
+
+    // asm("xchg %bx,%bx");
+    sti();
     // 开启中断，现在开始，中段就会来了。
 
     printf("ok,let's go to task 1!");
-    asm("xchg %bx,%bx");
+    // asm("xchg %bx,%bx");
     asm("jmpl $0x38,$0");
 
     for (;;)
