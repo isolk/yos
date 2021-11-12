@@ -3,6 +3,11 @@
 #include "tss.h"
 #include "ldt.h"
 
+#define lgdt(addr) asm( \
+    "lgdt (%0);"        \
+    :                   \
+    : "r"(&gdt_ptr))
+
 struct gdt_entry gdt_tables[256];
 struct gdt_pointer gdt_ptr;
 
@@ -84,10 +89,5 @@ void init_gdt()
     gdt_ptr.addr = (uint32_t)&gdt_tables;
 
     // 设置gdrt寄存器
-    lgdtr(&gdt_ptr);
-    asm(
-        // "movl %0,%%eax;"
-        "lgdt (%0);"
-        :
-        : "r"(&gdt_ptr));
+    lgdt(&gdt_ptr);
 }

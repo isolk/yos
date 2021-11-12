@@ -39,12 +39,6 @@ cli:
     cli
     ret
 
-global lgdtr
-lgdtr:
-    mov edx,[esp+4]
-    lgdt [edx]
-    ret
-
 global lldtr
 lldtr:
     xchg bx,bx
