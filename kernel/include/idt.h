@@ -7,3 +7,5 @@ void cli();
 void sti();
 void lgdtr(void *);
 void ltr(void *);
+
+void init_idt();

@@ -41,31 +41,11 @@ int _start()
 
     print_mem();
 
-    // 分别设置gdt表的内核数据段和代码段
-    init_gdt_code(new_gdt(), 0, 0xFFFFFFFF);
-    init_gdt_data(new_gdt(), 0, 0xFFFFFFFF);
-
-    // 创建2个ldt段，分别是任务1和任务2的ldt。他们分别占据gdt的3-4段。 然后所有的ldt段都是指向同一个线性地址，每个ldt段包含有2个段。
-    init_gdt_ldt(new_gdt(), new_ldt_begin(), 24);
-    init_gdt_ldt(new_gdt(), new_ldt_begin(), 24);
-
     init_page_all();
 
-    // 创建2个tss段，任务1和2的tss，占据5-6段。
-    tss *t = new_tss();
-    init_tss1(t, (uint32_t)paget_dir);
-    init_gdt_tss(new_gdt(), t, 104);
+    init_gdt();
 
-    tss *t2 = new_tss();
-    init_tss2(t2, (uint32_t)paget_dir);
-    init_gdt_tss(new_gdt(), t2, 104);
-
-    init_gdt_task(new_gdt(), 0x30);
-
-    // 设置gdtr的内容，然后加载gdtr
-    // 但是此时cs ds值还没改
-    init_gdt_pointer();
-    ll();
+    asm("xchg %bx,%bx");
 
     // 到这儿，gdt的东西已经处理完了。 下面我们处理tss段。
 
@@ -101,7 +81,7 @@ int _start()
     read_disk(1000, 0x7d000, (uint8_t)128);
 
     read_elf(0x7d000); // 用户程序放在21MB处
-    t->eip = 20 * 1024 * 1024 + 0;
+    // t->eip = 20 * 1024 * 1024 + 0;
 
     lldt();
 
