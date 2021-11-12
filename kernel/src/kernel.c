@@ -45,6 +45,8 @@ int _start()
 
     init_gdt();
 
+    init_ldt();
+
     asm("xchg %bx,%bx");
 
     // 到这儿，gdt的东西已经处理完了。 下面我们处理tss段。
