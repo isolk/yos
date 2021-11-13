@@ -1,21 +1,15 @@
-global load_idt
-load_idt:
-    mov edx, [esp + 4]
-    lidt [edx]
-    ret
-
-global keyboard_handler_init
+global keyboard_handler_wrap
 extern keyboard_handler
-keyboard_handler_init:
+keyboard_handler_wrap:
     pushad
     cld
     call keyboard_handler
     popad
     iretd
 
-global time_handler_init
+global time_handler_wrap
 extern time_handler
-time_handler_init:
+time_handler_wrap:
     pushad
     cld
     push ds
@@ -29,26 +23,6 @@ time_handler_init:
     popad
     iretd
 
-global sti
-sti:
-    sti
-    ret
-
-global cli
-cli:
-    cli
-    ret
-
-global lldtr
-lldtr:
-    xchg bx,bx
-    mov dx,[esp+4]
-    lldt dx
-    ret
-
-local:
-    dd 0
-    dw 0x18
 
 global init_page:
 init_page:
@@ -61,20 +35,9 @@ init_page:
     mov cr0,eax                        ;开启分页机制
     ret
 
-global echo:
-echo:
-    mov eax, [esp + 4]
-    ret
-
-global ltr
-ltr:
-    mov edx,[esp+4]
-    ltr [edx]
-    ret
-
-global syscall_handler_init
+global syscall_handler_wrap
 extern syscall_handler
-syscall_handler_init:
+syscall_handler_wrap:
     pushad
     cld
     push ds
@@ -92,34 +55,20 @@ syscall_handler_init:
     popad
     iretd
 
-global default_handler_init
+global default_handler_wrap
 extern default_handler
-default_handler_init:
+default_handler_wrap:
     pushad
     cld
     call default_handler
     popad
     iretd
 
-global page_handler_init
+global page_handler_wrap
 extern page_handler
-page_handler_init:
+page_handler_wrap:
     mov eax,cr2
     push eax
     call page_handler
     add esp,8
-    iretd
-
-global i_hander_13
-extern i_hander_13_do
-i_hander_13:
-    call i_hander_13_do
-    add esp,4
-    iretd
-
-global i_hander_10
-extern i_hander_10_do
-i_hander_10:
-    call i_hander_10_do
-    add esp,4
     iretd

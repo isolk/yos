@@ -118,6 +118,7 @@ mov eax,[ebx+0x08]
 add eax,[ebx+0x14]
 mov [0x7c00-30],eax
 
+cli
 jmp [0x1400000+0x18]
 hlt
 

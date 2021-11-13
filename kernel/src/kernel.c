@@ -13,11 +13,6 @@
 #include <time.h>
 
 extern struct idt_pointer idt_ptr;
-void keyboard_handler_init();
-void default_handler_init();
-void page_handler_init();
-void syscall_handler_init();
-void time_handler_init();
 
 // 比实际情况可能会少1M，不考虑这1M了
 void print_mem()
@@ -33,12 +28,6 @@ void print_mem()
 
 int _start()
 {
-    // 打印内存容量
-    // 测试代码，先屏蔽中断。
-    cli();
-
-    printf("hello,world!  ~!~  ");
-
     print_mem();
 
     init_page_all();
@@ -47,53 +36,24 @@ int _start()
 
     init_ldt();
 
-    asm("xchg %bx,%bx");
+    // 初始化idt
+    init_idt();
 
-    // 到这儿，gdt的东西已经处理完了。 下面我们处理tss段。
+    // 初始化所有中断
+    init_interrupt();
 
-    // tss段设置完毕，开始设置中断
+    asm("sti");
 
-    // 初始化中断控制器工作方式
-    init_pic();
-    init_idtr();
-    load_idt(&idt_ptr);
-    for (size_t i = 0; i < 32; i++)
-    {
-        load_idt_entry(i, (uint32_t)handlers[i], 0x08, 0x8e);
-    }
+    // read_disk(1000, 0x7d000, (uint8_t)128);
 
-    for (size_t i = 32; i < 256; i++)
-    {
-        load_idt_entry(i, (uint32_t)default_handler_init, 0x08, 0x8e);
-    }
-
-    // 缺页处理
-    load_idt_entry(14, (uint32_t)page_handler_init, 0x08, 0x8e);
-
-    // 初始化时间的端口设置,设置时间中断
-    init_time();
-    load_idt_entry(0x28, (uint32_t)time_handler_init, 0x08, 0x8e);
-
-    // 设置键盘中断,以及初始化键盘操作
-    load_idt_entry(0x21, (uint32_t)keyboard_handler_init, 0x08, 0x8e);
-    init_keyboard();
-
-    load_idt_entry(0x80, (uint32_t)syscall_handler_init, 0x08, 0b11101110);
-
-    read_disk(1000, 0x7d000, (uint8_t)128);
-
-    read_elf(0x7d000); // 用户程序放在21MB处
+    // read_elf(0x7d000); // 用户程序放在21MB处
     // t->eip = 20 * 1024 * 1024 + 0;
 
-    lldt();
-
     // asm("xchg %bx,%bx");
-    sti();
+    // sti();
     // 开启中断，现在开始，中段就会来了。
 
-    printf("ok,let's go to task 1!");
-    // asm("xchg %bx,%bx");
-    asm("jmpl $0x38,$0");
+    // asm("jmpl $0x38,$0");
 
     for (;;)
     {

@@ -6,7 +6,7 @@
 #define lgdt(addr) asm( \
     "lgdt (%0);"        \
     :                   \
-    : "r"(&gdt_ptr))
+    : "r"(addr))
 
 struct gdt_entry gdt_tables[256];
 struct gdt_pointer gdt_ptr;

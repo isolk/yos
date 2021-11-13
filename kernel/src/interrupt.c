@@ -1,10 +1,17 @@
 #include <string.h>
 #include <interrupt.h>
 #include <stdint-gcc.h>
+#include "idt.h"
 #define PIC_1_CTRL 0x20
 #define PIC_1_DATA 0x21
 #define PIC_2_CTRL 0xA0
 #define PIC_2_DATA 0xA1
+
+void keyboard_handler_wrap();
+void default_handler_wrap();
+void page_handler_wrap();
+void syscall_handler_wrap();
+void time_handler_wrap();
 
 void init_pic()
 {
@@ -23,255 +30,28 @@ void init_pic()
     write_port_b(0xa1, 0xff);
 }
 
-void i_hander_0()
+void init_interrupt()
 {
-    printf("0");
-    write_port_b(0x20, 0x20);
-    write_port_b(0xa0, 0x20);
-}
-void i_hander_1()
-{
-    printf("1");
-    write_port_b(0x20, 0x20);
-    write_port_b(0xa0, 0x20);
-}
-void i_hander_2()
-{
-    printf("2");
-    write_port_b(0x20, 0x20);
-    write_port_b(0xa0, 0x20);
-}
-void i_hander_3()
-{
-    printf("3");
-    write_port_b(0x20, 0x20);
-    write_port_b(0xa0, 0x20);
-}
-void i_hander_4()
-{
-    printf("4");
-    write_port_b(0x20, 0x20);
-    write_port_b(0xa0, 0x20);
-}
-void i_hander_5()
-{
-    printf("5");
-    write_port_b(0x20, 0x20);
-    write_port_b(0xa0, 0x20);
-}
-void i_hander_6()
-{
-    printf("6");
-    write_port_b(0x20, 0x20);
-    write_port_b(0xa0, 0x20);
-}
-void i_hander_7()
-{
-    printf("7");
-    write_port_b(0x20, 0x20);
-    write_port_b(0xa0, 0x20);
-}
-void i_hander_8()
-{
-    printf("8");
-    write_port_b(0x20, 0x20);
-    write_port_b(0xa0, 0x20);
-}
-void i_hander_9()
-{
-    printf("9");
-    write_port_b(0x20, 0x20);
-    write_port_b(0xa0, 0x20);
-}
+    // 设置默认的，后面逐步完善
+    for (size_t i = 0; i < 256; i++)
+    {
+        load_idt_entry(i, (uint32_t)default_handler_wrap, 0x08, 0x8e);
+    }
 
-void i_hander_11()
-{
-    printf("11");
-    write_port_b(0x20, 0x20);
-    write_port_b(0xa0, 0x20);
-}
-void i_hander_12()
-{
-    printf("12");
-    write_port_b(0x20, 0x20);
-    write_port_b(0xa0, 0x20);
-}
-void i_hander_14()
-{
-    printf("14");
-    write_port_b(0x20, 0x20);
-    write_port_b(0xa0, 0x20);
-}
-void i_hander_15()
-{
-    printf("15");
-    write_port_b(0x20, 0x20);
-    write_port_b(0xa0, 0x20);
-}
-void i_hander_16()
-{
-    printf("16");
-    write_port_b(0x20, 0x20);
-    write_port_b(0xa0, 0x20);
-}
-void i_hander_17()
-{
-    printf("17");
-    write_port_b(0x20, 0x20);
-    write_port_b(0xa0, 0x20);
-}
-void i_hander_18()
-{
-    printf("18");
-    write_port_b(0x20, 0x20);
-    write_port_b(0xa0, 0x20);
-}
-void i_hander_19()
-{
-    printf("19");
-    write_port_b(0x20, 0x20);
-    write_port_b(0xa0, 0x20);
-}
-void i_hander_20()
-{
-    printf("20");
-    write_port_b(0x20, 0x20);
-    write_port_b(0xa0, 0x20);
-}
-void i_hander_21()
-{
-    printf("21");
-    write_port_b(0x20, 0x20);
-    write_port_b(0xa0, 0x20);
-}
-void i_hander_22()
-{
-    printf("22");
-    write_port_b(0x20, 0x20);
-    write_port_b(0xa0, 0x20);
-}
-void i_hander_23()
-{
-    printf("23");
-    write_port_b(0x20, 0x20);
-    write_port_b(0xa0, 0x20);
-}
-void i_hander_24()
-{
-    printf("24");
-    write_port_b(0x20, 0x20);
-    write_port_b(0xa0, 0x20);
-}
-void i_hander_25()
-{
-    printf("25");
-    write_port_b(0x20, 0x20);
-    write_port_b(0xa0, 0x20);
-}
-void i_hander_26()
-{
-    printf("26");
-    write_port_b(0x20, 0x20);
-    write_port_b(0xa0, 0x20);
-}
-void i_hander_27()
-{
-    printf("27");
-    write_port_b(0x20, 0x20);
-    write_port_b(0xa0, 0x20);
-}
-void i_hander_28()
-{
-    printf("28");
-    write_port_b(0x20, 0x20);
-    write_port_b(0xa0, 0x20);
-}
-void i_hander_29()
-{
-    printf("29");
-    write_port_b(0x20, 0x20);
-    write_port_b(0xa0, 0x20);
-}
-void i_hander_30()
-{
-    printf("30");
-    write_port_b(0x20, 0x20);
-    write_port_b(0xa0, 0x20);
-}
-void i_hander_31()
-{
-    printf("31");
-    write_port_b(0x20, 0x20);
-    write_port_b(0xa0, 0x20);
-}
+    // 初始化pic工作方式
+    init_pic();
 
-void *handlers[32] = {
-    i_hander_0,
-    i_hander_1,
-    i_hander_2,
-    i_hander_3,
-    i_hander_4,
-    i_hander_5,
-    i_hander_6,
-    i_hander_7,
-    i_hander_8,
-    i_hander_9,
-    i_hander_10,
-    i_hander_11,
-    i_hander_12,
-    i_hander_13,
-    i_hander_14,
-    i_hander_15,
-    i_hander_16,
-    i_hander_17,
-    i_hander_18,
-    i_hander_19,
-    i_hander_20,
-    i_hander_21,
-    i_hander_22,
-    i_hander_23,
-    i_hander_24,
-    i_hander_25,
-    i_hander_26,
-    i_hander_27,
-    i_hander_28,
-    i_hander_29,
-    i_hander_30,
-    i_hander_31};
+    // 缺页处理
+    load_idt_entry(14, (uint32_t)page_handler_wrap, 0x08, 0x8e);
 
-uint32_t selector(uint32_t code)
-{
-    return (code << 16) >> 19;
-}
+    // 设置键盘中断,以及初始化键盘操作
+    init_keyboard();
+    load_idt_entry(0x21, (uint32_t)keyboard_handler_wrap, 0x08, 0x8e);
 
-uint8_t from_outside(uint32_t code)
-{
-    return code & 1;
-}
+    // 初始化时间的端口设置,设置时间中断
+    init_time();
+    load_idt_entry(0x28, (uint32_t)time_handler_wrap, 0x08, 0x8e);
 
-uint8_t tbl(uint32_t code)
-{
-    return code << 29 >> 30;
-}
-
-void i_hander_13_do(uint32_t err_code)
-{
-    // asm("xchg %bx,%bx");
-    uint32_t s = selector(err_code);
-    uint8_t f = from_outside(err_code);
-    uint8_t t = tbl(err_code);
-    printf("errcode=%d      -----          ", err_code);
-    write_port_b(0x20, 0x20);
-    write_port_b(0xa0, 0x20);
-}
-
-void i_hander_10_do(uint32_t err_code)
-{
-    // asm("xchg %bx,%bx");
-    uint32_t s = selector(err_code);
-    uint8_t f = from_outside(err_code);
-    uint8_t t = tbl(err_code);
-    printf("errcode=%d      -----          ", err_code);
-    write_port_b(0x20, 0x20);
-    write_port_b(0xa0, 0x20);
+    // 系统中断
+    load_idt_entry(0x80, (uint32_t)syscall_handler_wrap, 0x08, 0b11101110);
 }
