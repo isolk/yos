@@ -11,24 +11,13 @@
 #include <disk.h>
 #include <elf.h>
 #include <time.h>
+#include <pm.h>
 
 extern struct idt_pointer idt_ptr;
 
-// 比实际情况可能会少1M，不考虑这1M了
-void print_mem()
-{
-    uint16_t *ptr_page_64k = 0x7c00 - 20;
-    uint32_t high_mem = *ptr_page_64k * 64 / 1024;
-
-    uint16_t *ptr_page_1k = 0x7c00 - 10;
-    uint32_t low_mem = *ptr_page_1k / 1024;
-
-    printf("mem is %d MB", low_mem + high_mem + 1);
-}
-
 int _start()
 {
-    print_mem();
+    init_mem();
 
     init_page_all();
 
