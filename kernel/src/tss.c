@@ -8,7 +8,7 @@ void kernel_run()
 {
     while (1)
     {
-        printf("pid=1  ");
+        printf("idle\n");
         asm("hlt");
     }
 }

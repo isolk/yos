@@ -40,8 +40,17 @@ void print_char(uint8_t str)
         g_row = ROW - 1;
     }
 
-    put_char(g_row, g_column, str);
-    g_column++;
+    if (str == '\n')
+    {
+        g_row++;
+        g_column = 0;
+    }
+    else
+    {
+        put_char(g_row, g_column, str);
+        g_column++;
+    }
+
     if (g_column == WIDTH)
     {
         g_row++;

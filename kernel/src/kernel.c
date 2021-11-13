@@ -33,7 +33,7 @@ int _start()
     init_page_all();
 
     init_tss();
-    
+
     init_gdt();
 
     init_ldt();
