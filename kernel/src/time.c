@@ -6,7 +6,7 @@ int cur_task = 0;
 void init_time()
 {
     write_port_b(0x70, 0x8b);
-    write_port_b(0x71, 0x12);
+    write_port_b(0x71, 0b10110); // 0001_0110
 
     write_port_b(0x70, 0x0c);
     read_port_b(0x71);
@@ -21,6 +21,8 @@ void time_handler()
 
     write_port_b(0x20, 0x20);
     write_port_b(0xa0, 0x20);
+
+    show_time();
 
     // print_char('*');
 
@@ -38,50 +40,31 @@ void time_handler()
     // }
 }
 
-// void show_time()
-// {
-//     asm volatile("mov %ds, %eax");
-//     asm volatile("push %ax");
-//     uint16_t ds = echo();
-//     if (ds == 0x10)
-//     {
-//         print_char('#');
-//     }
-//     else
-//     {
-//         print_char('!');
-//     }
+void show_time()
+{
+    write_port_b(0x70, 0x80);
+    uint8_t sec = read_port_b(0x71);
 
-//     return;
-//     write_port_b(0x70, 0x80);
-//     uint8_t sec = read_port_b(0x71);
+    write_port_b(0x70, 0x82);
+    uint8_t min = read_port_b(0x71);
 
-//     write_port_b(0x70, 0x82);
-//     uint8_t min = read_port_b(0x71);
+    write_port_b(0x70, 0x84);
+    uint8_t hour = read_port_b(0x71);
 
-//     write_port_b(0x70, 0x84);
-//     uint8_t hour = read_port_b(0x71);
+    write_port_b(0x70, 0x87);
+    uint8_t day = read_port_b(0x71);
 
-//     write_port_b(0x70, 0x0c);
-//     read_port_b(0x71);
+    write_port_b(0x70, 0x88);
+    uint8_t month = read_port_b(0x71);
 
-//     uint8_t h = hour >> 4;
-//     uint8_t l = hour & 0x0F;
-//     put_char(0, 0, h + '0');
-//     put_char(0, 1, l + '0');
-//     put_char(0, 2, ':');
+    write_port_b(0x70, 0x89);
+    uint8_t year = read_port_b(0x71);
 
-//     h = min >> 4;
-//     l = min & 0x0F;
-//     put_char(0, 3, h + '0');
-//     put_char(0, 4, l + '0');
-//     put_char(0, 5, ':');
+    write_port_b(0x70, 0x0c);
+    read_port_b(0x71);
 
-//     h = sec >> 4;
-//     l = sec & 0x0F;
-//     put_char(0, 6, h + '0');
-//     put_char(0, 7, l + '0');
-// }
+    printf("%d-%d-%d %d:%d:%d\n", year, month, day, hour, min, sec);
+}
 
 void default_handler()
 {
