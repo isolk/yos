@@ -1,69 +1,45 @@
 #include <tss.h>
+#include "page.h"
 #include "string.h"
 
 tss tss_tables[256];
-int tss_index = 0;
 
-void tss_func2()
+void kernel_run()
 {
-    for (size_t i = 0; i < 10000000; i++)
+    while (1)
     {
-        // asm("xchg %bx,%bx");
-        asm("xchg %bx,%bx");
-        print_char('*');
-        // printf("hello,this is :%d", 10);
-        // asm("mov $0,%ax;int $0x80");
-        // print_char('1'); // tss_func2只会在用户态执行，print_char是定义在内核段，直接访问会抛出io异常！
+        printf("pid=1  ");
+        asm("hlt");
     }
 }
 
-void tss_func1()
+void init_tss_kernel(uint32_t cr3)
 {
-    for (size_t i = 0; i < 10000000; i++)
-    {
-        print_char('#');
-        // printf("hello,this is :%d", 10);
-        // asm("mov $1,%ax; int $0x80");
-    }
-}
-
-tss *new_tss()
-{
-    return &tss_tables[tss_index++];
-}
-
-void init_tss1(tss *t, uint32_t cr3)
-{
+    tss *t = &tss_tables[0];
     t->io = 1;
     t->tss = 0;
 
-    t->eip = tss_func1;
+    t->eip = kernel_run;
     t->eflags = 0x200;
     t->esp = 3 * 1024 * 1024 + 1024;
 
-    // 0000 0000 0001 0000
-    // 0000 0000 0001 1100
-    // 01100
-    t->ss0 = 0b10000;
-    t->esp0 = 2 * 1024 * 1024 + 4096;
-
-    t->cs = 0b01111;
-    t->es = 0b10111;
-    t->ss = 0b10111;
-    t->ds = 0b10111;
-    t->fs = 0b10111;
-    t->gs = 0b10111;
-    t->ldt_selector = 0x18 | 0b11;
+    t->cs = 0b00100;
+    t->es = 0b01100;
+    t->ss = 0b01100;
+    t->ds = 0b01100;
+    t->fs = 0b01100;
+    t->gs = 0b01100;
+    t->ldt_selector = 0x18;
     t->io = 0x8000000;
     t->cr3 = cr3;
 }
 
-void init_tss2(tss *t, uint32_t cr3)
+void init_tss_user(tss *t, uint32_t cr3)
 {
     t->io = 1;
     t->tss = 0;
 
-    t->eip = tss_func2;
+    t->eip = kernel_run;
     t->eflags = 0x200;
     t->esp = 3 * 1024 * 1024 + 2048;
 
@@ -82,4 +58,10 @@ void init_tss2(tss *t, uint32_t cr3)
     t->ldt_selector = 0x20 | 0b00;
     t->io = 0x8000000;
     t->cr3 = cr3;
+}
+
+void init_tss()
+{
+    init_tss_kernel(paget_dir);
+    // init_tss_user();
 }

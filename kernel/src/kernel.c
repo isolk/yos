@@ -32,6 +32,8 @@ int _start()
 
     init_page_all();
 
+    init_tss();
+    
     init_gdt();
 
     init_ldt();
@@ -49,11 +51,11 @@ int _start()
     // read_elf(0x7d000); // 用户程序放在21MB处
     // t->eip = 20 * 1024 * 1024 + 0;
 
-    // asm("xchg %bx,%bx");
     // sti();
     // 开启中断，现在开始，中段就会来了。
 
-    // asm("jmpl $0x38,$0");
+    asm("xchg %bx,%bx");
+    asm("jmpl $0x30,$0");
 
     for (;;)
     {

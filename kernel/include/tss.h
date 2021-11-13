@@ -36,8 +36,5 @@ typedef struct tss
     uint32_t io;
 }__attribute__((packed)) tss;
 
-tss *new_tss();
-void init_tss1(tss * t,uint32_t cr3);
-void init_tss2(tss * t,uint32_t cr3);
-
+void init_tss();
 extern tss tss_tables[256];

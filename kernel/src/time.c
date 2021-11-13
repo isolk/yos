@@ -22,7 +22,7 @@ void time_handler()
     write_port_b(0x20, 0x20);
     write_port_b(0xa0, 0x20);
 
-    print_char('*');
+    // print_char('*');
 
     // 判断当前任务号，使用jmp切换
     // if (cur_task == 0)
