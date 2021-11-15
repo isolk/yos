@@ -1,4 +1,11 @@
 #include "pm.h"
+typedef struct ktrunk
+{
+	uint8_t used;
+	uint32_t byte_size;
+} __attribute__((packed)) ktrunk;
+
+ktrunk *km;		  // 1k大小 1G=1MB
 page *page_table; // 通过init_mem设置位置
 uint32_t page_size = 0;
 
@@ -39,6 +46,10 @@ void init_mem()
 	{
 		page_table[i].used = 1;
 	}
+
+	km = (kernel_end_page + cost_page + 512) * 4096;
+	km->used = 0;
+	km->byte_size = (page_size - kernel_end_page - cost_page - 512) * 4096;
 }
 
 void use_page(uint32_t page_num)
@@ -72,6 +83,74 @@ uint32_t ask_page()
 
 void *ask_page_ptr()
 {
-	uint32_t p = ask_page();
-	return p * 4096;
+	return kalloc_frame(1);
+	// uint32_t p = ask_page();
+	// return p * 4096;
+}
+
+#define data(it) (uint32_t) it + sizeof(ktrunk)
+#define next(it) (uint32_t) it + sizeof(ktrunk) + it->byte_size
+void *kalloc(size_t size)
+{
+	ktrunk *it = km;
+	while (it->used || it->byte_size < size)
+	{
+		it = next(it);
+	}
+	split(it, size);
+	return data(it);
+}
+
+ktrunk *split_frame(ktrunk *it, uint32_t frame_size)
+{
+	uint32_t addr = data(it);
+	uint32_t cur_page_size = 4096 - addr % 4096;
+	ktrunk *next_it = addr + cur_page_size - sizeof(ktrunk);
+
+	next_it->byte_size = frame_size * 4096;
+	next_it->used = 1;
+
+	ktrunk *nn_next = next(next_it);
+	nn_next->byte_size = it->byte_size - frame_size * 4096 - sizeof(ktrunk) - cur_page_size;
+	nn_next->used = 0;
+
+	it->used = 0;
+	it->byte_size = cur_page_size - sizeof(ktrunk);
+	return next_it;
+}
+
+void *kalloc_frame(uint32_t frame_size)
+{
+	ktrunk *it = km;
+	while (it)
+	{
+		if (it->used)
+		{
+			it = next(it);
+			continue;
+		}
+		if (it->byte_size < frame_size * 4096)
+		{
+			it = next(it);
+			continue;
+		}
+		uint32_t addr = (uint32_t)it + sizeof(ktrunk);
+		if (it->byte_size - addr % 4096 - 64 < frame_size * 4096) // zhiaoshao 64
+		{
+			it = next(it);
+			continue;
+		}
+		ktrunk *ret = split_frame(it, frame_size);
+		return (uint32_t)ret + sizeof(ktrunk);
+	}
+}
+
+void split(ktrunk *it, size_t size)
+{
+	ktrunk *next_it = next(it);
+	next_it->byte_size = it->byte_size - size - sizeof(ktrunk);
+	next_it->used = 0;
+
+	it->used = 1;
+	it->byte_size = size;
 }

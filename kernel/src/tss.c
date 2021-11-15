@@ -7,7 +7,7 @@ tss tss_tables[256];
 
 void kernel_run()
 {
-    char *list = ask_page_ptr();
+    char *list = kalloc(100);
     list[0] = 'y';
     list[1] = 'o';
     list[2] = 's';
@@ -27,7 +27,7 @@ void init_tss_kernel(uint32_t cr3)
 
     t->eip = kernel_run;
     t->eflags = 0x200;
-    t->esp = ask_page_ptr() + 4096;
+    t->esp = kalloc(4096) + 4096;
 
     t->cs = 0b00100;
     t->es = 0b01100;

@@ -21,3 +21,9 @@ void free_ptr(void *ptr);
 uint32_t ask_page();
 
 void *ask_page_ptr();
+
+void* kalloc(size_t size);
+
+void *kalloc_frame(size_t frame_size);
+
+void kfree(void *addr);
