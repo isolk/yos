@@ -7,11 +7,22 @@ tss tss_tables[256];
 
 void kernel_run()
 {
-    char *list = kalloc(100);
+    char *list = kalloc(3);
+    print_mm();
+
     list[0] = 'y';
     list[1] = 'o';
     list[2] = 's';
     list[3] = '\0';
+    printf("%s\n", list);
+
+    kfree(list);
+    print_mm();
+    *list = kalloc(20);
+    print_mm();
+    kfree(list);
+    print_mm();
+
     while (1)
     {
         printf("%s\n", list);

@@ -27,3 +27,5 @@ void* kalloc(size_t size);
 void *kalloc_frame(size_t frame_size);
 
 void kfree(void *addr);
+
+void print_mm();

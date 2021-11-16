@@ -40,7 +40,7 @@ void init_page_all()
 // 在此代码执行之时，内核被loader加载到物理地址的1-11M处。将内核所占用的物理地址(0-11M）映射到虚拟地址中，其他地址设置为页不存在。
 void init_page_dir()
 {
-    paget_dir = ask_page_ptr();
+    paget_dir = kalloc_frame(1);
     paget_table = kalloc_frame(1024); // TODO: 请求时要请求多个页。否则只分配一个页，不满足需求，下面table映射的内容就有问题，现在没问题是因为对应的物理地址没有被访问。
     // 0-1024，每一个dir项包含1024个地址映射，也就是1024*4KB=4MB。 内核放在第0-11M，也就是第1-3个direntry处
     for (size_t i = 0; i < 1 * K; i++)

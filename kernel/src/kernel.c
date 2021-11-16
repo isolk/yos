@@ -19,9 +19,15 @@ int _start()
 {
     init_mem();
 
+    print_mm();
+
     init_page_all();
 
+    print_mm();
+
     init_tss();
+
+    print_mm();
 
     init_gdt();
 
@@ -33,7 +39,7 @@ int _start()
     // 初始化所有中断
     init_interrupt();
 
-    asm("sti");
+    // asm("cli");
 
     // read_disk(1000, 0x7d000, (uint8_t)128);
 
