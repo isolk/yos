@@ -102,7 +102,9 @@ cld
 mov ecx,[ebx+0x10] ; 文件中长度
 mov esi,[ebx+0x04] ; 文件偏移
 add esi,0x1400000
-mov edi,[ebx+0x08] ; 重定位内存地址 
+mov eax,[ebx+0x08]
+sub eax,3*1024*1024*1024
+mov edi,eax; 重定位内存地址 
 rep movsb 
 
 mov ebx,0x1400000+0x34+32
@@ -110,13 +112,72 @@ cld
 mov ecx,[ebx+0x10] ; 文件中长度
 mov esi,[ebx+0x04] ; 文件偏移
 add esi,0x1400000
-mov edi,[ebx+0x08] ; 重定位内存地址 
+mov eax,[ebx+0x08]
+sub eax,3*1024*1024*1024
+mov edi,eax; 重定位内存地址 
 rep movsb 
 
 ; 将内核的结束位置放在固定内存里供内核使用
 mov eax,[ebx+0x08]
 add eax,[ebx+0x14]
 mov [0x7c00-30],eax
+
+xchg bx,bx
+mov eax,30*1024*1024+4096
+and eax,0xFFFFF000
+
+mov ebx,30*1024*1024
+mov ecx,0
+mov edi,0
+
+install_dir:
+mov edx,eax  ; edx = ptr
+add edx,edi  ; ptr+i*4k
+or edx,0x7   ; (ptr+i*4k)|0x7
+mov [ebx],edx; data->dir
+add ebx,4
+add edi,4096 ; i*4k
+inc ecx      ; i++
+cmp ecx,256 ; cmp 1k
+jne install_dir
+
+mov eax,30*1024*1024+4096
+and eax,0xFFFFF000
+
+mov ebx,30*1024*1024+768*4
+mov ecx,0
+mov edi,0
+
+install_dir_h:
+mov edx,eax  ; edx = ptr
+add edx,edi  ; ptr+i*4k
+or edx,0x7   ; (ptr+i*4k)|0x7
+mov [ebx],edx; data->dir
+add ebx,4
+add edi,4096 ; i*4k
+inc ecx      ; i++
+cmp ecx,192 ; cmp 1k
+jne install_dir_h
+
+mov ebx,30*1024*1024+4096 ; p_table
+mov ecx,0
+install_table:
+mov edi,ecx ; i
+shl edi,12  ; ptr=i<<12
+or edi,0x7  ; ptr|0x7
+mov [ebx],edi
+add ebx,4 ; p_table[i]
+inc ecx
+cmp ecx,256*1024
+jne install_table
+
+mov eax,30*1024*1024
+mov cr3,eax
+mov eax,cr0
+or eax,0x80000000
+xchg bx,bx
+mov cr0,eax                        ;开启分页机
+xchg bx,bx
 
 cli
 jmp [0x1400000+0x18]

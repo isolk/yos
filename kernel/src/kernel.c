@@ -17,7 +17,9 @@ extern struct idt_pointer idt_ptr;
 
 int _start()
 {
+    printf("hello");
     init_mem();
+    print_mm();
 
     init_page_all();
 

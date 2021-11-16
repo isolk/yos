@@ -21,7 +21,7 @@ uint32_t get_kernel_end_page()
 {
 	uint32_t *ptr_end_addr = 0x7c00 - 30;
 	uint32_t end_addr = *ptr_end_addr;
-	return end_addr / 4096 + 1;
+	return (end_addr - 3 * 1024 * 1024 * 1024) / 4096 + 1;
 }
 
 void init_mem()
