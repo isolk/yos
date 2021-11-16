@@ -70,4 +70,4 @@ typedef struct elf
 } __attribute__((packed)) elf;
 
 // 读取elf文件并加载到内存中
-void read_elf(elf_fh *s_addr);
+void *read_elf(elf_fh *s_addr, void *mem_addr);

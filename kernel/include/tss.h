@@ -34,7 +34,9 @@ typedef struct tss
     uint32_t gs;
     uint32_t ldt_selector;
     uint32_t io;
+    uint8_t used;
 }__attribute__((packed)) tss;
 
 void init_tss();
+void install_tss_user(uint32_t cr3, uint32_t eip, uint32_t esp);
 extern tss tss_tables[256];

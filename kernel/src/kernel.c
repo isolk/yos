@@ -19,32 +19,25 @@ int _start()
 {
     init_mem();
 
-    print_mm();
-
     init_page_all();
 
-    print_mm();
-
     init_tss();
-
-    print_mm();
 
     init_gdt();
 
     init_ldt();
 
-    // 初始化idt
     init_idt();
 
-    // 初始化所有中断
     init_interrupt();
 
     // asm("cli");
 
-    // read_disk(1000, 0x7d000, (uint8_t)128);
+    // void *addr = kalloc(128 * 512);
+    // read_disk(1000, addr, (uint8_t)128);
 
-    // read_elf(0x7d000); // 用户程序放在21MB处
-    // t->eip = 20 * 1024 * 1024 + 0;
+    // read_elf(addr); // 用户程序放在21MB处
+    // // t->eip = 20 * 1024 * 1024 + 0;
 
     // sti();
     // 开启中断，现在开始，中段就会来了。

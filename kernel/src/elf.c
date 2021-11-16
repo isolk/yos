@@ -4,7 +4,7 @@
 #include <mem.h>
 
 elf main_elf;
-void read_elf(elf_fh *s_addr)
+void *read_elf(elf_fh *s_addr, void *mem_addr)
 {
 	main_elf.file_header = *s_addr;
 
@@ -19,13 +19,13 @@ void read_elf(elf_fh *s_addr)
 
 	for (size_t i = 0; i < fh.phnum; i++)
 	{
-		cp_elf(ph + i);
+		cp_elf(ph + i, mem_addr);
 	}
 
-	return;
+	return s_addr->entry;
 }
 
-void cp_elf(elf_ph *ph)
+void cp_elf(elf_ph *ph, void *mem_addr)
 {
-	cp(ph->offset + 0x7d000, ph->vaddr, ph->filesz);
+	cp(ph->offset + mem_addr, ph->vaddr, ph->filesz);
 }

@@ -51,34 +51,43 @@ void init_tss_kernel(uint32_t cr3)
     t->cr3 = cr3;
 }
 
-void init_tss_user(tss *t, uint32_t cr3)
+void install_tss_user(uint32_t cr3, uint32_t eip, uint32_t esp)
 {
+    tss *t = NULL;
+    for (size_t i = 0; i < 256; i++)
+    {
+        if (!tss_tables[i].used)
+        {
+            t = &tss_tables[i];
+            break;
+        }
+    }
+
+    t->eip = eip;
+    t->esp = esp;
+
     t->io = 1;
     t->tss = 0;
-
-    t->eip = kernel_run;
     t->eflags = 0x200;
-    t->esp = 3 * 1024 * 1024 + 2048;
+    t->ss0 = 0b10000;
+    t->esp0 = kalloc(4096) + 4096;
 
-    // 0000 0000 0001 0000
-    // 0000 0000 0001 1100
-    // 01100
-    // t->ss0 = 0b10000;
-    // t->esp0 = 2 * 1024 * 1024 + 2024;
-
-    t->cs = 0b01100;
-    t->es = 0b10100;
-    t->ss = 0b10100;
-    t->ds = 0b10100;
-    t->fs = 0b10100;
-    t->gs = 0b10100;
-    t->ldt_selector = 0x20 | 0b00;
+    t->cs = 0b00111;
+    t->es = 0b01111;
+    t->ss = 0b01111;
+    t->ds = 0b01111;
+    t->fs = 0b10011;
+    t->gs = 0b01111;
+    t->ldt_selector = 0x18 | 0x11;
     t->io = 0x8000000;
     t->cr3 = cr3;
 }
 
 void init_tss()
 {
+    for (size_t i = 0; i < 256; i++)
+    {
+        tss_tables[i].used = 0;
+    }
     init_tss_kernel(paget_dir);
-    // init_tss_user();
 }
