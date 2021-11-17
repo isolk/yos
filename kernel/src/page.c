@@ -29,19 +29,19 @@ void init_page_all()
 {
     init_page_dir();
     init_page_table();
-    init_page((uint32_t)paget_dir - 3 * 1024 * 1024 * 1024); // 要换成物理地址给寄存器
+    // init_page((uint32_t)paget_dir - 3 * 1024 * 1024 * 1024); // 要换成物理地址给寄存器
 }
 
 void init_page_dir()
 {
     paget_dir = kalloc_frame(1);
     paget_table = kalloc_frame(1024);
-    // 映射0-3G -> 0-3G
-    for (size_t i = 0; i < 768; i++)
-    {
-        uint32_t ptr = (uint32_t)paget_table - 3 * 1024 * 1024 * 1024;
-        paget_dir[i].data = (ptr + i * K4) | 0x7;
-    }
+    // // 映射0-3G -> 0-3G
+    // for (size_t i = 0; i < 768; i++)
+    // {
+    //     uint32_t ptr = (uint32_t)paget_table - 3 * 1024 * 1024 * 1024;
+    //     paget_dir[i].data = (ptr + i * K4) | 0x7;
+    // }
 
     // 映射3-4G -> 0-1G
     for (size_t i = 768; i < K; i++)

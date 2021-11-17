@@ -18,7 +18,8 @@ extern struct idt_pointer idt_ptr;
 int _start()
 {
     init_mem();
-    // print_mm();
+
+    print_mm();
 
     init_page_all();
 
@@ -32,7 +33,7 @@ int _start()
 
     init_interrupt();
 
-    asm("cli");
+    // asm("cli");
 
     // void *addr = kalloc(128 * 512);
     // read_disk(1000, addr, (uint8_t)128);
@@ -43,8 +44,17 @@ int _start()
     // sti();
     // 开启中断，现在开始，中段就会来了。
 
+    // printf("hello");
     // asm("xchg %bx,%bx");
-    asm("jmpl $0x30,$0");
+    // asm("mov $0x20,%ax");
+    // asm("ltr %ax");
+    // asm("iret");
+    // asm("xchg %bx,%bx");
+    print_mm();
+    // asm("xchg %bx,%bx");
+
+    asm("jmpl $0x20,$0");
+    asm("sti");
 
     for (;;)
     {

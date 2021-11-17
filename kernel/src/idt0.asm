@@ -27,7 +27,6 @@ time_handler_wrap:
 global init_page:
 init_page:
     mov eax,[esp+4]                 ;PCD=PWT=0
-    xchg bx,bx
     mov cr3,eax
 
     mov eax,cr0

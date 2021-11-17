@@ -24,18 +24,21 @@ uint32_t get_kernel_end_page()
 	return (end_addr - 3 * 1024 * 1024 * 1024) / 4096 + 1;
 }
 
+#define next(it) (uint32_t) it + sizeof(ktrunk) + it->byte_size
 void init_mem()
 {
 	uint32_t page_size = get_total_mem_k();
 	uint32_t kernel_end_page = get_kernel_end_page();
 
-	km = 3 * 1024 * 1024 * 1024 + kernel_end_page * 4096;
+	km = 3 * 1024 * 1024 * 1024 + kernel_end_page * 4096 + 1024 * 1024;
 	km->used = 0;
-	km->byte_size = page_size * 1024 - kernel_end_page * 4096;
+	km->byte_size = page_size * 1024 - kernel_end_page * 4096 - 1024 * 1024;
+	ktrunk *it = next(km);
+	// asm("xchg %bx,%bx");
+	it->byte_size = 0;
 }
 
 #define data(it) ((uint32_t)it + sizeof(ktrunk))
-#define next(it) (uint32_t) it + sizeof(ktrunk) + it->byte_size
 void *kalloc(size_t size)
 {
 	ktrunk *it = km;
@@ -132,9 +135,9 @@ void print_mm()
 		{
 			left += it->byte_size;
 		}
-
-		printf("[start:{%dm,%dk,%db} size:{%dm,%dk,%db} used:{%d}]\n", sm, sk, sb, m, k, b, it->used);
 		it = next(it);
+		// asm("xchg %bx,%bx");
+		printf("[start:{%dm,%dk,%db} size:{%dm,%dk,%db} used:{%d}],it_addr = %x\n", sm, sk, sb, m, k, b, it->used, it);
 	}
 
 	printf("-----------total:{%dm,%dk,%db},used:{%dm,%dk,%db},left:{%dm,%dk,%db}--------------\n", get_m(total), get_k(total), get_b(total), get_m(used), get_k(used), get_b(used), get_m(left), get_k(left), get_b(left));

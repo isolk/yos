@@ -177,6 +177,10 @@ or eax,0x80000000
 mov cr0,eax                        ;开启分页机
 
 cli
+mov eax,[0x7c00-30]
+and eax,0xFFFFF000
+add eax,1024*1024;  // 先临时给个地址，完了去内核通过c修改……，汇编不想写。
+mov esp,eax
 jmp [0x1400000+0x18]
 hlt
 

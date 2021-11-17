@@ -34,7 +34,7 @@ typedef struct tss
     uint32_t gs;
     uint32_t ldt_selector;
     uint32_t io;
-    uint8_t used;
+    // uint8_t used;
 }__attribute__((packed)) tss;
 
 void init_tss();

@@ -90,6 +90,7 @@ void page_handler(uint32_t cr2, uint32_t err_code)
     {
         printf("errcode=%x,cr2=%x", err_code, cr2);
     }
+    printf("errcode=%x,cr2=%x", err_code, cr2);
     write_port_b(0x20, 0x20);
     write_port_b(0xa0, 0x20);
 }

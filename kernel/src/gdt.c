@@ -76,7 +76,6 @@ void init_gdt()
 
     // gdt[6] = task_gate dpl = 0 任务门
     g = &gdt_tables[6];
-    tss_addr = &tss_tables[1];
     g->w1 = 0;
     g->w2 = 0x20; // 指向 gdt[4]
     g->b1 = 0;
