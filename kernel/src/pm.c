@@ -29,7 +29,7 @@ void init_mem()
 	uint32_t page_size = get_total_mem_k();
 	uint32_t kernel_end_page = get_kernel_end_page();
 
-	km = kernel_end_page * 4096;
+	km = 3 * 1024 * 1024 * 1024 + kernel_end_page * 4096;
 	km->used = 0;
 	km->byte_size = page_size * 1024 - kernel_end_page * 4096;
 }

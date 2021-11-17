@@ -122,7 +122,6 @@ mov eax,[ebx+0x08]
 add eax,[ebx+0x14]
 mov [0x7c00-30],eax
 
-xchg bx,bx
 mov eax,30*1024*1024+4096
 and eax,0xFFFFF000
 
@@ -175,9 +174,7 @@ mov eax,30*1024*1024
 mov cr3,eax
 mov eax,cr0
 or eax,0x80000000
-xchg bx,bx
 mov cr0,eax                        ;开启分页机
-xchg bx,bx
 
 cli
 jmp [0x1400000+0x18]

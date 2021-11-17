@@ -22,40 +22,38 @@ struct page_entry
 #define K 1024
 #define K4 4096
 
-// 内核：1-11M
-// 0-4k 页目录
-// 内核的页表
-
 struct page_entry *paget_dir = 0;
-// 内核的页表
 struct page_entry *paget_table = 0;
 
 void init_page_all()
 {
     init_page_dir();
     init_page_table();
-    // init_page(paget_dir);
+    init_page((uint32_t)paget_dir - 3 * 1024 * 1024 * 1024); // 要换成物理地址给寄存器
 }
 
-// 在此代码执行之时，内核被loader加载到物理地址的1-11M处。将内核所占用的物理地址(0-11M）映射到虚拟地址中，其他地址设置为页不存在。
 void init_page_dir()
 {
     paget_dir = kalloc_frame(1);
-    paget_table = kalloc_frame(1024); // TODO: 请求时要请求多个页。否则只分配一个页，不满足需求，下面table映射的内容就有问题，现在没问题是因为对应的物理地址没有被访问。
-    // 0-1024，每一个dir项包含1024个地址映射，也就是1024*4KB=4MB。 内核放在第0-11M，也就是第1-3个direntry处
-    for (size_t i = 768; i < 1 * K; i++)
+    paget_table = kalloc_frame(1024);
+    // 映射0-3G -> 0-3G
+    for (size_t i = 0; i < 768; i++)
     {
-        uint32_t ptr = (uint32_t)paget_table;
-        ptr = ptr & 0xFFFFF000; // 清零低12位
-        uint32_t k = i - 768;
-        paget_dir[i].data = (ptr + k * K4) | 0x7;
+        uint32_t ptr = (uint32_t)paget_table - 3 * 1024 * 1024 * 1024;
+        paget_dir[i].data = (ptr + i * K4) | 0x7;
+    }
+
+    // 映射3-4G -> 0-1G
+    for (size_t i = 768; i < K; i++)
+    {
+        uint32_t ptr = (uint32_t)paget_table + (i - 768) * K4 - 3 * 1024 * 1024 * 1024;
+        paget_dir[i].data = ptr | 0x7;
     }
 }
 
 void init_page_table()
 {
-    //对于内核空间，进行相同映射。也就是对于地址小于12MB的线性地址，全部映射成相同的物理地址.
-    for (size_t i = 0; i < 32 * K4; i++)
+    for (size_t i = 0; i < 1024 * 1024; i++)
     {
         uint32_t ptr = (uint32_t)(i << 12);
         paget_table[i].data = ptr | 0x7;

@@ -89,5 +89,5 @@ void init_tss()
     {
         tss_tables[i].used = 0;
     }
-    init_tss_kernel(paget_dir);
+    init_tss_kernel((uint32_t)paget_dir - 3 * 1024 * 1024 * 1024);
 }

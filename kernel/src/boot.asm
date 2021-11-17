@@ -1,6 +1,5 @@
 cli
 	; 获取内存大小，将其防在内存1M-4处
-	; xchg bx,bx
 	XOR CX, CX
 	XOR DX, DX
 	MOV AX, 0xE801
@@ -14,7 +13,6 @@ cli
  
 	MOV [0x7c00-10], CX
 	MOV [0x7c00-20], DX
-	; xchg bx,bx
 USEAX:
 	; AX,cx = number of contiguous Kb, 1M to 16M
 	; BX,dx = contiguous 64Kb pages above 16M
