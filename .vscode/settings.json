@@ -16,6 +16,7 @@
 		"idt.h": "c",
 		"stdint-gcc.h": "c",
 		"string.h": "c",
-		"interrupt.h": "c"
+		"interrupt.h": "c",
+		"linked_list.h": "c"
 	}
 }

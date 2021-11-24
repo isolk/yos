@@ -2,6 +2,8 @@
 #include "idt.h"
 #include <string.h>
 #include <stdint-gcc.h>
+#include "process.h"
+#include "gdt.h"
 int cur_task = 0;
 void init_time()
 {
@@ -24,20 +26,8 @@ void time_handler()
 
     show_time();
 
-    // print_char('*');
-
-    // 判断当前任务号，使用jmp切换
-    // if (cur_task == 0)
-    // {
-    //     cur_task = 1;
-    //     asm("jmp $0x30,$0");
-    // }
-    // else
-    // {
-    //     cur_task = 0;
-    //     // print_char('#');
-    //     asm("jmp $0x28,$0");
-    // }
+    process_schedule();
+    // asm("jmpl $0x20,$0");
 }
 
 void show_time()

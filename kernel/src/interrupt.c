@@ -12,6 +12,7 @@ void default_handler_wrap();
 void page_handler_wrap();
 void syscall_handler_wrap();
 void time_handler_wrap();
+void general_handler_wrap();
 
 void init_pic()
 {
@@ -54,4 +55,23 @@ void init_interrupt()
 
     // 系统中断
     load_idt_entry(0x80, (uint32_t)syscall_handler_wrap, 0x08, 0b11101110);
+
+    load_idt_entry(13, (uint32_t)general_handler_wrap, 0x08, 0b11101110);
+}
+
+#define is_present(err_code) (err_code & 0x01)
+#define is_write(err_code) (err_code & 0x02)
+#define is_user(err_code) (err_code & 0x04)
+#define is_struction(err_code) (err_code & 0x10)
+#define is_pk(err_code) (err_code & 0x20)
+void general_handler(uint32_t err_code)
+{
+    int u = is_user(err_code);
+    int w = is_write(err_code);
+    int s = is_struction(err_code);
+    int p = is_present(err_code);
+    int pk = is_pk(err_code);
+    printf("errcode=%x", err_code);
+    write_port_b(0x20, 0x20);
+    write_port_b(0xa0, 0x20);
 }

@@ -1,7 +1,9 @@
 #include <stddef.h>
 #include <stdint-gcc.h>
-
+#pragma once
 // https://en.wikipedia.org/wiki/Executable_and_Linkable_Format
+#ifndef _ELF_
+#define _ELF
 typedef struct elf_fh
 {
 	// 0x7f454c46
@@ -71,3 +73,4 @@ typedef struct elf
 
 // 读取elf文件并加载到内存中
 void *read_elf(elf_fh *s_addr, void *mem_addr);
+#endif

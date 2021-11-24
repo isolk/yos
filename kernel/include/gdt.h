@@ -18,3 +18,5 @@ struct gdt_pointer
 }__attribute__((packed));
 
 void init_gdt();
+
+void set_gdt_kernel_tss(uint8_t index,uint32_t t);

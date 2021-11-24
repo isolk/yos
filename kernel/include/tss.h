@@ -1,6 +1,8 @@
 #include<stddef.h>
 #include <stdint-gcc.h>
 
+#ifndef _TSS_
+#define _TSS_
 typedef struct tss
 {
     uint32_t tss;
@@ -37,6 +39,9 @@ typedef struct tss
     // uint8_t used;
 }__attribute__((packed)) tss;
 
+void kernel_init();
+void kernel_init_2();
 void init_tss();
 void install_tss_user(uint32_t cr3, uint32_t eip, uint32_t esp);
 extern tss tss_tables[256];
+#endif

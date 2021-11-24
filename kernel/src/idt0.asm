@@ -71,3 +71,10 @@ page_handler_wrap:
     call page_handler
     add esp,8
     iretd
+
+global general_handler_wrap
+extern general_handler
+general_handler_wrap:
+    call general_handler
+    add esp,4
+    iretd

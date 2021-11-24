@@ -5,13 +5,12 @@
 #include <gdt.h>
 #include <page.h>
 #include <ldt.h>
-#include <tss.h>
 #include <stdarg.h>
 #include <string.h>
 #include <disk.h>
-#include <elf.h>
 #include <time.h>
 #include <pm.h>
+#include "process.h"
 
 extern struct idt_pointer idt_ptr;
 
@@ -23,7 +22,7 @@ int _start()
 
     init_page_all();
 
-    init_tss();
+    // init_tss();
 
     init_gdt();
 
@@ -33,7 +32,7 @@ int _start()
 
     init_interrupt();
 
-    // asm("cli");
+    asm("cli");
 
     // void *addr = kalloc(128 * 512);
     // read_disk(1000, addr, (uint8_t)128);
@@ -50,11 +49,13 @@ int _start()
     // asm("ltr %ax");
     // asm("iret");
     // asm("xchg %bx,%bx");
-    print_mm();
+    // print_mm();
     // asm("xchg %bx,%bx");
 
-    asm("jmpl $0x20,$0");
-    asm("sti");
+    load_entry(kernel_init);
+    load_entry(kernel_init_2);
+    // asm("sti");
+    start();
 
     for (;;)
     {

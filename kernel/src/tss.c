@@ -2,32 +2,29 @@
 #include "page.h"
 #include "string.h"
 #include "pm.h"
+#include "process.h"
 
 tss tss_tables[256];
 
-void kernel_run()
+void kernel_init()
 {
-    char *list = kalloc(3);
-    print_mm();
+    // asm("sti");
+    // process *p = process_manager.head->next->data;
+    // set_gdt_kernel_tss(1, p->_tss);
+    // asm("call $0x28,$0");
 
-    // list[0] = 'y';
-    // list[1] = 'o';
-    // list[2] = 's';
-    // list[3] = '\0';
-    // printf("%s\n", list);
-
-    // kfree(list);
-    // print_mm();
-    // *list = kalloc(20);
-    // print_mm();
-    // kfree(list);
-    // print_mm();
-
-    printf("fault...");
     while (1)
     {
-        printf("kernel...");
-        // printf("%s\n", list);
+        printf("idle\n");
+        asm("hlt");
+    }
+}
+
+void kernel_init_2()
+{
+    while (1)
+    {
+        printf("init22222222222222222222222222222222222222222\n");
         asm("hlt");
     }
 }
@@ -36,7 +33,7 @@ void init_tss_kernel(uint32_t cr3)
 {
     tss *t = &tss_tables[0];
     t->tss = 0;
-    t->eip = kernel_run;
+    // t->eip = kernel_run;
     t->eflags = 0x200;
     t->esp = kalloc(4096) + 4096;
 
@@ -89,5 +86,5 @@ void init_tss()
     // {
     //     tss_tables[i].used = 0;
     // }
-    init_tss_kernel((uint32_t)paget_dir - 3 * 1024 * 1024 * 1024);
+    // init_tss_kernel((uint32_t)paget_dir - 3 * 1024 * 1024 * 1024);
 }

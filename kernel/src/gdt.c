@@ -54,7 +54,7 @@ void init_gdt()
     g->b3 = 0b01000000; //g_d_l_avl_limit(19-16)
     g->b4 = (uint32_t)ldt_addr >> 24;
 
-    // gdt[4] = tss dpl = 0 内核进程的tss
+    // gdt[4] = tss dpl = 0 内核进程的tss1
     g = &gdt_tables[4];
     tss *tss_addr = &tss_tables[0];
     g->w1 = 104;
@@ -64,24 +64,34 @@ void init_gdt()
     g->b3 = 0b01000000; //g_d_l_avl_limit(19-16)
     g->b4 = (uint32_t)tss_addr >> 24;
 
-    // gdt[5] = tss dpl = 3 用户进程的tss
+    // gdt[5] = tss dpl = 0 内核进程的tss2
     g = &gdt_tables[5];
     tss_addr = &tss_tables[1];
     g->w1 = 104;
     g->w2 = tss_addr;
     g->b1 = (uint32_t)tss_addr >> 16;
-    g->b2 = 0b11101001; //p_dpl(2)_s_type(4)
+    g->b2 = 0b10001001; //p_dpl(2)_s_type(4)
     g->b3 = 0b01000000; //g_d_l_avl_limit(19-16)
     g->b4 = (uint32_t)tss_addr >> 24;
 
+    // gdt[5] = tss dpl = 3 用户进程的tss
+    // g = &gdt_tables[5];
+    // tss_addr = &tss_tables[1];
+    // g->w1 = 104;
+    // g->w2 = tss_addr;
+    // g->b1 = (uint32_t)tss_addr >> 16;
+    // g->b2 = 0b11101001; //p_dpl(2)_s_type(4)
+    // g->b3 = 0b01000000; //g_d_l_avl_limit(19-16)
+    // g->b4 = (uint32_t)tss_addr >> 24;
+
     // gdt[6] = task_gate dpl = 0 任务门
-    g = &gdt_tables[6];
-    g->w1 = 0;
-    g->w2 = 0x20; // 指向 gdt[4]
-    g->b1 = 0;
-    g->b2 = 0b10000101; //p_dpl(2)_s_type(4)
-    g->b3 = 0;
-    g->b4 = 0;
+    // g = &gdt_tables[6];
+    // g->w1 = 0;
+    // g->w2 = 0x20; // 指向 gdt[4]
+    // g->b1 = 0;
+    // g->b2 = 0b10000101; //p_dpl(2)_s_type(4)
+    // g->b3 = 0;
+    // g->b4 = 0;
 
     // 设置gdtr的属性
     gdt_ptr.limit = 7 * 8 - 1;
@@ -89,4 +99,12 @@ void init_gdt()
 
     // 设置gdrt寄存器
     lgdt(&gdt_ptr);
+}
+
+void set_gdt_kernel_tss(uint8_t index, uint32_t t)
+{
+    struct gdt_entry *g = &gdt_tables[4 + index];
+    g->w2 = t;
+    g->b1 = (uint32_t)t >> 16;
+    g->b4 = (uint32_t)t >> 24;
 }
