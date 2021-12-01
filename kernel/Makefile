@@ -1,7 +1,7 @@
 # LIBSTD=$(HOME)/yos/libc
 LIBSYS=$(HOME)/yos/system
 cc = i686-elf-gcc
-CFLAGS = -g -c -std=gnu99 -ffreestanding -O0 -Wall -Wextra  -I include -I $(LIBSYS)/include 
+CFLAGS = -g -c -masm=intel -std=gnu99 -ffreestanding -O0 -Wall -Wextra  -I include -I $(LIBSYS)/include 
 SRC_C = $(wildcard src/*.c)
 OBJ_C=$(patsubst %.c,obj/%.o,$(notdir $(SRC_C)))
 

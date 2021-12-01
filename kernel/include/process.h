@@ -8,21 +8,19 @@
 #define _PROCESS_
 typedef struct process
 {
-	uint8_t pid;
+	uint32_t pid;
 	void *entry;
 	void *page_dir;
+	uint8_t state;
 	tss *_tss;
 } process;
 
-extern linked_list process_manager;
-
-// 加载内核进程，传入函数地址。
-void load_entry(void *entry);
-
-void load_elf(elf *e);
+extern linked_node *cur_process; // 指向当前进程
 
 void start();
 
 void process_schedule();
+
+void exit_process();
 
 #endif

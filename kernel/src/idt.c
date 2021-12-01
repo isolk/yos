@@ -4,7 +4,7 @@
 
 // 每个idt的成员
 #define lidt(addr) asm( \
-    "lidt (%0);"        \
+    "lidt [%0];"        \
     :                   \
     : "r"(addr))
 

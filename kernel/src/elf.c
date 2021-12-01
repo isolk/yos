@@ -19,7 +19,7 @@ void *read_elf(elf_fh *s_addr, void *mem_addr)
 
 	for (size_t i = 0; i < fh.phnum; i++)
 	{
-		cp_elf(ph + i, mem_addr);
+		cp_elf(ph + i, (uint32_t)s_addr - 3 * 1024 * 1024 * 1024);
 	}
 
 	return s_addr->entry;
@@ -27,5 +27,5 @@ void *read_elf(elf_fh *s_addr, void *mem_addr)
 
 void cp_elf(elf_ph *ph, void *mem_addr)
 {
-	cp(ph->offset + mem_addr, ph->vaddr, ph->filesz);
+	cp(ph->offset + mem_addr, ph->paddr, ph->filesz);
 }

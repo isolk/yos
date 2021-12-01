@@ -24,9 +24,9 @@ void time_handler()
     write_port_b(0x20, 0x20);
     write_port_b(0xa0, 0x20);
 
-    show_time();
+    // show_time();
 
-    process_schedule();
+    // process_schedule();
     // asm("jmpl $0x20,$0");
 }
 

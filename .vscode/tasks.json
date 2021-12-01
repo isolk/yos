@@ -8,26 +8,49 @@
             "type": "shell",
             "command": "./quick_debug.sh",
             "isBackground": true,
+            "problemMatcher": {
+                "owner": "mocha",
+                "fileLocation": "relative",
+                "pattern": [
+                    {
+                        "regexp": "^not\\sok\\s\\d+\\s(.*)$"
+                    },
+                    {
+                        "regexp": "\\s+(.*)$",
+                        "message": 1
+                    },
+                    {
+                        "regexp": "\\s+at\\s(.*):(\\d+):(\\d+)$",
+                        "file": 1,
+                        "line": 2,
+                        "column": 3
+                    }
+                ],
+                "background": {
+                    "activeOnStart": true,
+                    "beginsPattern": {
+                        "regexp": "mocha*"
+                    },
+                    "endsPattern": {
+                        "regexp": "^ok"
+                    }
+                },
+            }
         },
         {
-            "label": "start",
+            "label": "quick_start2",
             "type": "shell",
-            "command": "qemu-system-i386 -no-reboot -no-shutdown -s -S -drive file=kernel/bin/disk.img,format=raw,index=0,media=disk",
-            "isBackground": true,
-            "group": {
-                "kind": "build",
-                "isDefault": true
+            // "options": {
+            //     "cwd": "${workspaceRoot}/"
+            // },
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "revealProblems": "onProblem"
             },
-            "dependsOn": [
-                "rebuild"
-            ],
-        },
-        {
-            "label": "rebuild",
-            "type": "shell",
-            "command": "./build.sh",
-            "group": "build",
-            "isBackground": true
+            "command": "./quick_debug.sh",
         }
     ]
 }

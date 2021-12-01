@@ -9,6 +9,7 @@
 # echo 'add-symbol-file k.sym 0x100000' >> t.g
 # i686-elf-objcopy --only-keep-debug kernel/obj/yos.bin k.sym
 # bochs -qf bochs/bochs.cfg
+echo "ok"
 qemu-system-i386 -no-reboot -no-shutdown -s -S -drive file=kernel/bin/disk.img,format=raw,index=0,media=disk
 # gdb -x t.g -tui
 # gdb -tui

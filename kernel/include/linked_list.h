@@ -4,16 +4,11 @@ typedef struct linked_node
 {
 	void *data;
 	struct linked_node *next;
+	struct linked_node *prev;
 } linked_node;
 
-typedef struct linked_list
-{
-	uint8_t count;
-	linked_node *head;
-} linked_list;
+linked_node *new_list();
 
-linked_list *new_linked_list();
+void append_data(linked_node *l, void *data);
 
-void push_data(linked_list *l, void *dt);
-
-void delete_node(linked_list *l, linked_node *node);
+void delete_node(linked_node *l);

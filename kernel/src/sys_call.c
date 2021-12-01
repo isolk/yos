@@ -1,17 +1,21 @@
 #include <sys_call.h>>
+#include "string.h"
+#include "process.h"
 
 void syscall_handler()
 {
-    uint16_t num = 0;
+    int16_t num = 0;
     uint16_t pa1 = 0;
-    asm("mov %%ax,%0;mov %%bx,%1"
-        : "=r"(num), "=r"(pa1));
+    asm(
+        ""
+        : "=a"(num), "=b"(pa1));
     if (num == 1)
     {
         print_char((char)pa1);
     }
     else if (num == 2)
     {
+        printf("int2");
+        exit_process();
     }
 }
-

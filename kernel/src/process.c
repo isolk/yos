@@ -4,74 +4,89 @@
 #include "pm.h"
 #include "page.h"
 #include "gdt.h"
+#include "idle.h"
+#include "string.h"
 
-linked_list process_manager;
-
-uint8_t _pid = 1;
-void load_entry(void *entry)
-{
-	process *p = kalloc(sizeof(process));
-	push_data(&process_manager, p);
-	p->entry = entry;
-	p->page_dir = paget_dir;
-	p->pid = _pid + 1;
-
-	tss *t = kalloc(sizeof(tss));
-	t->tss = 0;
-	t->eip = entry;
-	t->eflags = 0x200;
-	t->esp = kalloc(4096) + 4096;
-
-	t->cs = 0x08;
-	t->es = 0x10;
-	t->ss = 0x10;
-	t->ds = 0x10;
-	t->fs = 0x10;
-	t->gs = 0x10;
-	t->ldt_selector = 0x18;
-	t->io = 0x8000000;
-	t->cr3 = (uint32_t)paget_dir - 3 * 1024 * 1024 * 1024;
-	p->_tss = t;
-}
-
-linked_node *cur = NULL;
-uint8_t index = 0;
+linked_node *cur_process; // 指向当前进程
 void start()
 {
-	cur = process_manager.head;
-	process *p = cur->data;
-	set_gdt_kernel_tss(0, p->_tss);
-	asm("jmpl $0x20,$0");
+	cur_process = new_list();
+	process *p = kalloc(sizeof(process));
+	cur_process->data = p;
+	tss *ts = new_tss_kernel((uint32_t)paget_dir - 3 * 1024 * 1024 * 1024, idle);
+	p->_tss = ts;
+	p->pid = 0;
+
+	uint8_t flag = install_gdt_kernel_tss(ts);
+	elf_fh *addr = kalloc(128 * 512);
+	read_disk(1000, addr, (uint8_t)128);
+	read_elf(addr, 0); // 用户程序放在21MB处
+	tss *ts2 = new_tss_user((uint32_t)paget_dir - 3 * 1024 * 1024 * 1024, addr->entry, 22 * 1024 * 1024);
+	uint8_t flag2 = install_gdt_user_tss(ts2);
+	p = kalloc(sizeof(process));
+	p->_tss = ts2;
+	p->pid = 1001;
+	append_data(cur_process, p);
+
+	cur_process = cur_process->next;
+	asm("jmp 0x20,0");
 }
 
+uint8_t in_schedule = 0;
 void process_schedule()
 {
-	// 先找到当前繁忙的tss
-	// 	然后设置不繁忙的tss地址
-	// 跳转到不繁忙的tss
-	if (cur->next != NULL)
-	{
-		cur = cur->next;
-	}
-	else if (cur != process_manager.head)
-	{
-		cur = process_manager.head;
-	}
-	else
+	if (in_schedule)
 	{
 		return;
 	}
-
-	process *p = cur->data;
-	index += 1;
-	index = index % 2;
-	set_gdt_kernel_tss(index, p->_tss);
-	if (index == 0)
+	in_schedule = 1;
+	// 每次调度时，直接简单的取下一个进程就可以了。如果就1个，什么都不做。
+	if (cur_process->next == cur_process)
 	{
-		asm("jmpl $0x20,$0");
+		in_schedule = 0;
+		return;
+	}
+	cur_process = cur_process->next;
+	process *p = cur_process->data;
+	if (p->state == -1)
+	{
+		linked_node *t = cur_process->next;
+		delete_node(cur_process);
+		cur_process = t;
+	}
+	// 跳转process
+	jmp_process(cur_process->data);
+}
+
+void jmp_process(process *p)
+{
+	uint8_t flag = 0;
+	if (p->pid < 1000)
+	{
+		flag = install_gdt_kernel_tss(p->_tss);
 	}
 	else
 	{
-		asm("jmpl $0x28,$0");
+		flag = install_gdt_user_tss(p->_tss);
 	}
+
+	if (flag == 4)
+	{
+		in_schedule = 0;
+		asm("jmp 0x20,0");
+	}
+	else
+	{
+		in_schedule = 0;
+		asm("jmp 0x28,0");
+	}
+}
+
+void exit_process()
+{
+	in_schedule = 1;
+	process *p = cur_process->data;
+	p->state = 1;
+	in_schedule = 0;
+	process_schedule();
 }

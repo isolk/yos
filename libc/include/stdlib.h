@@ -1,4 +1,4 @@
-#include <stdint-gcc.h>
+#include <stdint.h>
 #include <stddef.h>
 #include "def.h"
 #define _size_64 64

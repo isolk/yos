@@ -1,28 +1,33 @@
 #include "linked_list.h"
 #include "page.h"
-
-linked_list *new_linked_list()
+#include "pm.h"
+linked_node *new_list()
 {
-	linked_list *t = kalloc(sizeof(linked_list));
-	return t;
+	linked_node *r = kalloc(sizeof(linked_node));
+	r->data = NULL;
+	r->next = r;
+	r->prev = r;
+	return r;
 }
 
-void push_data(linked_list *l, void *dt)
+void append_data(linked_node *l, void *data)
 {
-	if (l->head == NULL)
-	{
-		l->head = kalloc(sizeof(linked_node));
-		l->head->data = dt;
-		l->head->next = NULL;
-		return;
-	}
+	linked_node *n = kalloc(sizeof(linked_node));
+	n->data = data;
 
-	linked_node *it = l->head;
-	while (it->next != NULL)
-	{
-		it = it->next;
-	}
-	it->next = kalloc(sizeof(linked_node));
-	it->next->data = dt;
-	it->next->next = NULL;
+	linked_node *next = l->next;
+
+	l->next = n;
+	n->prev = l;
+
+	next->prev = n;
+	n->next = next;
+}
+
+void delete_node(linked_node *l)
+{
+	linked_node *prev = l->prev;
+	prev->next = l->next;
+	l->next->prev = prev;
+	kfree(l);
 }

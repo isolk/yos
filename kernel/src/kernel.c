@@ -52,8 +52,6 @@ int _start()
     // print_mm();
     // asm("xchg %bx,%bx");
 
-    load_entry(kernel_init);
-    load_entry(kernel_init_2);
     // asm("sti");
     start();
 
