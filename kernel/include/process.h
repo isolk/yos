@@ -6,16 +6,24 @@
 
 #ifndef _PROCESS_
 #define _PROCESS_
-typedef struct process
+enum TaskState
+{
+	running,
+	exit
+};
+
+typedef struct task_struct
 {
 	uint32_t pid;
 	void *entry;
 	void *page_dir;
 	uint8_t state;
 	tss *_tss;
-} process;
+	struct task_struct *next;
+	struct task_struct *prev;
+} task_struct;
 
-extern linked_node *cur_process; // 指向当前进程
+extern task_struct *cur_task; // 指向当前进程
 
 void start();
 

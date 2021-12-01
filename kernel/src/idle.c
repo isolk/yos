@@ -6,7 +6,7 @@ void idle()
 	asm("xchg %bx,%bx");
 	while (1)
 	{
-		printf("idle");
+		printf("idle\n");
 		asm("hlt");
 	}
 }

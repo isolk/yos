@@ -6,16 +6,42 @@
 #include "gdt.h"
 #include "idle.h"
 #include "string.h"
+#define cnew(TYPE) kalloc(sizeof(TYPE))
 
-linked_node *cur_process; // 指向当前进程
+task_struct *cur_task; // 指向当前进程
+task_struct *new_task(task_struct *t)
+{
+	task_struct *new_ts = cnew(task_struct);
+	if (t == NULL)
+	{
+		new_ts->next = new_ts;
+		new_ts->prev = new_ts;
+		return new_ts;
+	}
+
+	task_struct *t_next = t->next;
+	t->next = new_ts;
+	new_ts->next = t_next;
+	t_next->prev = new_ts;
+	new_ts->prev = t;
+	return new_ts;
+}
+
+task_struct *delete_task(task_struct *t)
+{
+	task_struct *prev = t->prev;
+	prev->next = t->next;
+	t->next->prev = prev;
+	kfree(t);
+	return t->next;
+}
+
 void start()
 {
-	cur_process = new_list();
-	process *p = kalloc(sizeof(process));
-	cur_process->data = p;
+	cur_task = new_task(NULL);
 	tss *ts = new_tss_kernel((uint32_t)paget_dir - 3 * 1024 * 1024 * 1024, idle);
-	p->_tss = ts;
-	p->pid = 0;
+	cur_task->_tss = ts;
+	cur_task->pid = 0;
 
 	uint8_t flag = install_gdt_kernel_tss(ts);
 	elf_fh *addr = kalloc(128 * 512);
@@ -23,51 +49,46 @@ void start()
 	read_elf(addr, 0); // 用户程序放在21MB处
 	tss *ts2 = new_tss_user((uint32_t)paget_dir - 3 * 1024 * 1024 * 1024, addr->entry, 22 * 1024 * 1024);
 	uint8_t flag2 = install_gdt_user_tss(ts2);
-	p = kalloc(sizeof(process));
-	p->_tss = ts2;
-	p->pid = 1001;
-	append_data(cur_process, p);
 
-	cur_process = cur_process->next;
-	asm("jmp 0x20,0");
+	task_struct *t2 = new_task(cur_task);
+	t2->_tss = ts2;
+	t2->pid = 1001;
+
+	// 一开始为idle，调度进init
+	process_schedule();
 }
 
 uint8_t in_schedule = 0;
 void process_schedule()
 {
+	printf("schedule\n");
 	if (in_schedule)
 	{
 		return;
 	}
 	in_schedule = 1;
-	// 每次调度时，直接简单的取下一个进程就可以了。如果就1个，什么都不做。
-	if (cur_process->next == cur_process)
+	if (cur_task->state == exit)
 	{
-		in_schedule = 0;
-		return;
+		cur_task = delete_task(cur_task);
+		jmp_process(cur_task);
 	}
-	cur_process = cur_process->next;
-	process *p = cur_process->data;
-	if (p->state == -1)
+	else if (cur_task->next != cur_task)
 	{
-		linked_node *t = cur_process->next;
-		delete_node(cur_process);
-		cur_process = t;
+		cur_task = cur_task->next;
+		jmp_process(cur_task);
 	}
-	// 跳转process
-	jmp_process(cur_process->data);
 }
 
-void jmp_process(process *p)
+void jmp_process(task_struct *t)
 {
 	uint8_t flag = 0;
-	if (p->pid < 1000)
+	if (t->pid < 1000)
 	{
-		flag = install_gdt_kernel_tss(p->_tss);
+		flag = install_gdt_kernel_tss(t->_tss);
 	}
 	else
 	{
-		flag = install_gdt_user_tss(p->_tss);
+		flag = install_gdt_user_tss(t->_tss);
 	}
 
 	if (flag == 4)
@@ -84,9 +105,7 @@ void jmp_process(process *p)
 
 void exit_process()
 {
-	in_schedule = 1;
-	process *p = cur_process->data;
-	p->state = 1;
-	in_schedule = 0;
+	printf("exit_schedule\n");
+	cur_task->state = exit;
 	process_schedule();
 }

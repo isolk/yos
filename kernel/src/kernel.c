@@ -16,6 +16,11 @@ extern struct idt_pointer idt_ptr;
 
 int _start()
 {
+    for (size_t i = 0; i < 2000; i++)
+    {
+        printf(" ");
+    }
+
     init_mem();
 
     print_mm();

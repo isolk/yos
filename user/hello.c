@@ -3,7 +3,7 @@
 #include <ystd.h>
 int _start()
 {
-	printf("user");
+	printf("user\n");
 	yexit(33);
 	return 0;
 }

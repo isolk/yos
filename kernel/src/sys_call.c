@@ -15,7 +15,6 @@ void syscall_handler()
     }
     else if (num == 2)
     {
-        printf("int2");
         exit_process();
     }
 }

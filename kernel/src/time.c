@@ -4,7 +4,6 @@
 #include <stdint-gcc.h>
 #include "process.h"
 #include "gdt.h"
-int cur_task = 0;
 void init_time()
 {
     write_port_b(0x70, 0x8b);
@@ -26,7 +25,7 @@ void time_handler()
 
     // show_time();
 
-    // process_schedule();
+    process_schedule();
     // asm("jmpl $0x20,$0");
 }
 
