@@ -42,6 +42,7 @@ void start()
 	tss *ts = new_tss_kernel((uint32_t)paget_dir - 3 * 1024 * 1024 * 1024, idle);
 	cur_task->_tss = ts;
 	cur_task->pid = 0;
+	cur_task->page_dir = paget_dir;
 
 	uint8_t flag = install_gdt_kernel_tss(ts);
 	elf_fh *addr = kalloc(128 * 512);
@@ -53,6 +54,7 @@ void start()
 	task_struct *t2 = new_task(cur_task);
 	t2->_tss = ts2;
 	t2->pid = 1001;
+	// t2->page_dir = ;
 
 	// 一开始为idle，调度进init
 	process_schedule();
@@ -108,4 +110,38 @@ void exit_process()
 	printf("exit_schedule\n");
 	cur_task->state = exit;
 	process_schedule();
+}
+
+// 给一个task的某虚拟地址，映射一段物理内存，并返回物理内存的起始位置，要求映射为4k的倍数
+void *map_task(task_struct *t, void *vaddr, size_t frame)
+{
+	// 对于一个虚拟地址，高10位是页目录，中间10位是页表，低12位是页内偏移
+	// 第一步，首先找到页目录偏移，取高10位，页目录索引
+	uint32_t dirIndex = (uint32_t)vaddr >> 22;
+	// 第二步，找页表偏移，取中间10位,也就是页表中的第几项
+	uint32_t tableIndex = (uint32_t)vaddr << 10 >> 22;
+
+	// | avl(2) | g | 0 | d | a | pcd | pwt | us | rw | p
+
+	uint32_t *dirEntry = &(t->page_dir->entrys[dirIndex]);
+	// 表示页表不存在
+	if (*dirEntry & 0x1 == 0)
+	{
+		// 分配的地址就是低12位为0的
+		*dirEntry = (uint32_t)kalloc_frame(1) | 0x7;
+	}
+
+	// 页表的地址，也就是1024个entry
+	page_table *pageTable = *dirEntry & 0xFFFFF000;
+
+	uint32_t *pageEntry = &(pageTable->entrys[tableIndex]);
+	if (*pageEntry & 0x1 == 1)
+	{
+		// 表示这个虚拟地址已经被映射，不能再次被映射了！
+		return -1;
+	}
+
+	uint32_t p_addr = kalloc_frame(1);
+	pageEntry = p_addr | 0x7;
+	return p_addr;
 }

@@ -2,6 +2,7 @@
 #include <stdint-gcc.h>
 #include "elf.h"
 #include "tss.h"
+#include "page.h"
 #include "linked_list.h"
 
 #ifndef _PROCESS_
@@ -16,7 +17,7 @@ typedef struct task_struct
 {
 	uint32_t pid;
 	void *entry;
-	void *page_dir;
+	page_table *page_dir; // 1024;
 	uint8_t state;
 	tss *_tss;
 	struct task_struct *next;

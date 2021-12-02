@@ -2,6 +2,7 @@
 #include <stddef.h>
 #include <stdint-gcc.h>
 #include <mem.h>
+#include "pm.h"
 
 elf main_elf;
 void *read_elf(elf_fh *s_addr, void *mem_addr)
@@ -27,5 +28,8 @@ void *read_elf(elf_fh *s_addr, void *mem_addr)
 
 void cp_elf(elf_ph *ph, void *mem_addr)
 {
-	cp(ph->offset + mem_addr, ph->paddr, ph->filesz);
+	// mem_copy(ph->offset + mem_addr, ph->paddr, ph->filesz);
+	// 先向内核申请一端物理内存，然后将代码段、数据段复制到对应的物理段内。
+	// 然后进行虚拟地址和物理地址的表映射。
+	mem_copy(ph->offset + mem_addr, kalloc(ph->filesz), ph->filesz);
 }

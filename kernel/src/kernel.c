@@ -39,25 +39,6 @@ int _start()
 
     asm("cli");
 
-    // void *addr = kalloc(128 * 512);
-    // read_disk(1000, addr, (uint8_t)128);
-
-    // read_elf(addr); // 用户程序放在21MB处
-    // // t->eip = 20 * 1024 * 1024 + 0;
-
-    // sti();
-    // 开启中断，现在开始，中段就会来了。
-
-    // printf("hello");
-    // asm("xchg %bx,%bx");
-    // asm("mov $0x20,%ax");
-    // asm("ltr %ax");
-    // asm("iret");
-    // asm("xchg %bx,%bx");
-    // print_mm();
-    // asm("xchg %bx,%bx");
-
-    // asm("sti");
     start();
 
     for (;;)
