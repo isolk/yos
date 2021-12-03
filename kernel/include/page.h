@@ -24,5 +24,5 @@ typedef struct page_table
 } page_table;
 
 void init_page_all();
-extern struct page_entry *paget_dir;
+extern page_table *paget_dir;
 #endif

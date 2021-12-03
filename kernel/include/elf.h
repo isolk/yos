@@ -67,10 +67,12 @@ typedef struct elf_sh
 typedef struct elf
 {
 	elf_fh file_header;
-	elf_ph program_headers[6];
-	elf_sh section_headers[6];
+	elf_ph program_headers[3]; // 不考虑过多的情况
+	elf_sh section_headers[3]; // 不考虑过多的情况
 } __attribute__((packed)) elf;
 
-// 读取elf文件并加载到内存中
-void *read_elf(elf_fh *s_addr, void *mem_addr);
+void init_elf(elf *e);
+uint32_t get_elf_psize(elf *e);
+uint32_t get_elf_vm_start(elf *e);
+void cp_elf_ph(elf *e, void *v_addr);
 #endif

@@ -4,32 +4,49 @@
 #include <mem.h>
 #include "pm.h"
 
-elf main_elf;
-void *read_elf(elf_fh *s_addr, void *mem_addr)
+void init_elf(elf *e)
 {
-	main_elf.file_header = *s_addr;
+	e->file_header = *(elf_fh *)e;
+	elf_fh fh = e->file_header;
+	elf_ph *ph = e->program_headers;
 
-	elf_fh fh = main_elf.file_header;
-	elf_ph *ph = main_elf.program_headers;
 	elf_ph *addr = NULL;
 	for (size_t i = 0; i < fh.phnum; i++)
 	{
-		addr = fh.phoff + i * fh.phentsize + (uint32_t)s_addr;
+		addr = fh.phoff + i * fh.phentsize + (uint32_t)e;
 		ph[i] = *addr;
 	}
-
-	for (size_t i = 0; i < fh.phnum; i++)
-	{
-		cp_elf(ph + i, (uint32_t)s_addr - 3 * 1024 * 1024 * 1024);
-	}
-
-	return s_addr->entry;
 }
 
-void cp_elf(elf_ph *ph, void *mem_addr)
+uint32_t get_elf_psize(elf *e)
 {
-	// mem_copy(ph->offset + mem_addr, ph->paddr, ph->filesz);
-	// 先向内核申请一端物理内存，然后将代码段、数据段复制到对应的物理段内。
-	// 然后进行虚拟地址和物理地址的表映射。
-	mem_copy(ph->offset + mem_addr, kalloc(ph->filesz), ph->filesz);
+	uint32_t total = 0;
+	elf_fh fh = e->file_header;
+	elf_ph *ph = e->program_headers;
+	for (size_t i = 0; i < fh.phnum; i++)
+	{
+		elf_ph p = ph[i];
+		total += (p.filesz / p.align + 1) * p.align;
+	}
+	return total;
+}
+
+uint32_t get_elf_vm_start(elf *e)
+{
+	return e->program_headers[0].vaddr;
+}
+
+void cp_elf_ph(elf *e, void *v_addr)
+{
+	elf_fh fh = e->file_header;
+	elf_ph *ph = e->program_headers;
+	for (size_t i = 0; i < fh.phnum; i++)
+	{
+		void *addr = v_addr;
+		if (i > 0)
+		{
+			addr = v_addr + (ph[i - 1].filesz / ph[i - 1].align + 1) * ph[i].align;
+		}
+		mem_copy(ph[i].offset + e, addr - 3 * 1024 * 1024 * 1024, ph[i].filesz);
+	}
 }

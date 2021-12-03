@@ -8,6 +8,9 @@
 #include "string.h"
 #define cnew(TYPE) kalloc(sizeof(TYPE))
 
+void cp_task_page_kernel(task_struct *t);
+void *map_task(task_struct *t, void *vaddr, size_t frame);
+
 task_struct *cur_task; // 指向当前进程
 task_struct *new_task(task_struct *t)
 {
@@ -43,18 +46,24 @@ void start()
 	cur_task->_tss = ts;
 	cur_task->pid = 0;
 	cur_task->page_dir = paget_dir;
-
-	uint8_t flag = install_gdt_kernel_tss(ts);
-	elf_fh *addr = kalloc(128 * 512);
-	read_disk(1000, addr, (uint8_t)128);
-	read_elf(addr, 0); // 用户程序放在21MB处
-	tss *ts2 = new_tss_user((uint32_t)paget_dir - 3 * 1024 * 1024 * 1024, addr->entry, 22 * 1024 * 1024);
-	uint8_t flag2 = install_gdt_user_tss(ts2);
+	install_gdt_kernel_tss(ts);
 
 	task_struct *t2 = new_task(cur_task);
+	elf *e = kalloc(128 * 512);
+	read_disk(1000, e, (uint8_t)128);
+
+	// elf文件已经放到addr处了
+	// init_elf(e);
+	cp_task_page_kernel(t2);
+	uint32_t size = get_elf_psize(e);
+	uint32_t vAdr = get_elf_vm_start(e);
+	uint32_t begin = map_task(t2, vAdr, size / 4096);
+	cp_elf_ph(e, begin);
+
+	tss *ts2 = new_tss_user((uint32_t)t2->page_dir - 3 * 1024 * 1024 * 1024, e->file_header.entry, 22 * 1024 * 1024);
+	install_gdt_user_tss(ts2);
 	t2->_tss = ts2;
 	t2->pid = 1001;
-	// t2->page_dir = ;
 
 	// 一开始为idle，调度进init
 	process_schedule();
@@ -101,6 +110,7 @@ void jmp_process(task_struct *t)
 	else
 	{
 		in_schedule = 0;
+		asm("xchg %bx,%bx");
 		asm("jmp 0x28,0");
 	}
 }
@@ -124,8 +134,10 @@ void *map_task(task_struct *t, void *vaddr, size_t frame)
 	// | avl(2) | g | 0 | d | a | pcd | pwt | us | rw | p
 
 	uint32_t *dirEntry = &(t->page_dir->entrys[dirIndex]);
+
 	// 表示页表不存在
-	if (*dirEntry & 0x1 == 0)
+	uint32_t k = *dirEntry & 0x1;
+	if (k == 0)
 	{
 		// 分配的地址就是低12位为0的
 		*dirEntry = (uint32_t)kalloc_frame(1) | 0x7;
@@ -141,7 +153,43 @@ void *map_task(task_struct *t, void *vaddr, size_t frame)
 		return -1;
 	}
 
-	uint32_t p_addr = kalloc_frame(1);
-	pageEntry = p_addr | 0x7;
+	uint32_t p_addr = kalloc_frame(frame);
+	for (size_t i = 0; i < frame; i++)
+	{
+		*pageEntry = p_addr + (i * 4096) | 0x7;
+		pageEntry += 1024;
+	}
+
 	return p_addr;
+}
+
+void cp_task_page_kernel(task_struct *t)
+{
+	t->page_dir = kalloc_frame(1);
+	page_table *paget_table = kalloc_frame(1024);
+
+	// 映射0-3G -> 0-3G
+	// for (size_t i = 0; i < 768; i++)
+	// {
+	// 	uint32_t ptr = (uint32_t)paget_table - 3 * 1024 * 1024 * 1024;
+	// 	t->page_dir->entrys[i] = (ptr + i * 66) | 0x7;
+	// }
+
+	// 映射3-4G -> 0-1G
+	for (size_t i = 768; i < 1024; i++)
+	{
+		uint32_t ptr = (uint32_t)paget_table + (i - 768) * 4096 - 3 * 1024 * 1024 * 1024;
+		t->page_dir->entrys[i] = ptr | 0x7;
+	}
+
+	uint32_t total = 0;
+	for (size_t i = 0; i < 1024; i++)
+	{
+		for (size_t j = 0; j < 1024; j++)
+		{
+			uint32_t ptr = (uint32_t)(total << 12) | 0x7;
+			paget_table[i].entrys[j] = ptr;
+			total++;
+		}
+	}
 }
