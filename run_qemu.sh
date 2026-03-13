@@ -147,12 +147,10 @@ build_qemu_command() {
             ;;
         nographic)
             opts+=("-nographic")
+            # -nographic已经自动将串口重定向到stdio，只需要指定文件时才添加-serial
             if [ -n "$SERIAL_OUTPUT" ]; then
                 opts+=("-serial")
                 opts+=("file:$SERIAL_OUTPUT")
-            else
-                opts+=("-serial")
-                opts+=("stdio")
             fi
             ;;
         serial)
