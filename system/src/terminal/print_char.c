@@ -1,6 +1,9 @@
 #include <terminal.h>
+#include <serial.h>
+
 int g_row;
 int g_column;
+
 void moveup_row(size_t row)
 {
     if (row == 0)
@@ -32,6 +35,9 @@ void srcoll()
 
 void print_char(uint8_t str)
 {
+    // 输出到串口（支持CLI调试）
+    serial_putchar(str);
+
     // row最大只能为24，此时位于屏幕最下方1行
     // column最大只能为79，此时位于最右侧
     if (g_row == ROW && g_column == 0)
