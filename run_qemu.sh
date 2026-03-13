@@ -220,7 +220,10 @@ start_qemu() {
         wait $QEMU_PID
     else
         # 非GDB模式：前台运行
-        eval $cmd
+        # 使用exec让QEMU替换脚本进程，这样Ctrl+C能直接发送给QEMU
+        print_info "按 Ctrl+A 然后 X 退出QEMU"
+        echo ""
+        exec $cmd
     fi
 }
 

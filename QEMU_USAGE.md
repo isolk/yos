@@ -13,6 +13,20 @@ chmod +x run_qemu.sh
 ./run_qemu.sh -h
 ```
 
+## 🎮 如何退出QEMU
+
+### VGA图形模式
+- 直接关闭窗口
+- 按 `Ctrl+Alt+F` → 然后按 `x`
+
+### Nographic模式（命令行）
+- 按 `Ctrl+A` 然后按 `X` (退出QEMU)
+- 按 `Ctrl+A` 然后按 `X` 是最可靠的退出方式
+
+### GDB调试模式
+- 按 `Ctrl+C` 停止调试会话
+- 脚本会自动清理QEMU进程
+
 ## 📋 常用命令
 
 | 场景 | 命令 |
