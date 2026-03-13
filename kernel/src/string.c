@@ -33,6 +33,7 @@
 #include <stdbool.h>
 #include <stdint-gcc.h>
 #include <string.h>
+#include <serial.h>
 
 // define this globally (e.g. gcc -DPRINTF_INCLUDE_CONFIG_H ...) to include the
 // printf_config.h header file
@@ -150,6 +151,8 @@ static inline void _out_char(char character, void *buffer, size_t idx, size_t ma
   if (character)
   {
     print_char(character);
+    // 同时输出到串口
+    serial_putchar(character);
   }
 }
 
