@@ -151,8 +151,6 @@ static inline void _out_char(char character, void *buffer, size_t idx, size_t ma
   if (character)
   {
     print_char(character);
-    // 同时输出到串口
-    serial_putchar(character);
   }
 }
 

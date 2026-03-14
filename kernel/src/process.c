@@ -6,15 +6,29 @@
 #include "gdt.h"
 #include "idle.h"
 #include "string.h"
+#include "time.h"
 #define cnew(TYPE) kalloc(sizeof(TYPE))
+
+#define KERNEL_BASE 0xC0000000u
 
 void cp_task_page_kernel(task_struct *t);
 void *map_task(task_struct *t, void *vaddr, size_t frame);
+void jmp_process(task_struct *t);
+
+static void zero_page(uint32_t *page)
+{
+	for (size_t i = 0; i < 1024; i++)
+	{
+		page[i] = 0;
+	}
+}
 
 task_struct *cur_task; // 指向当前进程
 task_struct *new_task(task_struct *t)
 {
 	task_struct *new_ts = cnew(task_struct);
+	new_ts->state = running;
+	new_ts->sleep_until_tick = 0;
 	if (t == NULL)
 	{
 		new_ts->next = new_ts;
@@ -28,6 +42,32 @@ task_struct *new_task(task_struct *t)
 	t_next->prev = new_ts;
 	new_ts->prev = t;
 	return new_ts;
+}
+
+static uint8_t is_sleep_expired(uint32_t current_tick, uint32_t sleep_until_tick)
+{
+	return (int32_t)(current_tick - sleep_until_tick) >= 0;
+}
+
+static task_struct *find_next_runnable_task(task_struct *start)
+{
+	task_struct *task = start;
+
+	if (task == NULL)
+	{
+		return NULL;
+	}
+
+	do
+	{
+		if (task->state == running)
+		{
+			return task;
+		}
+		task = task->next;
+	} while (task != start);
+
+	return NULL;
 }
 
 task_struct *delete_task(task_struct *t)
@@ -53,7 +93,7 @@ void start()
 	read_disk(1000, e, (uint8_t)128);
 
 	// elf文件已经放到addr处了
-	// init_elf(e);
+	init_elf(e);
 	cp_task_page_kernel(t2);
 	uint32_t size = get_elf_psize(e);
 	uint32_t vAdr = get_elf_vm_start(e);
@@ -72,7 +112,8 @@ void start()
 uint8_t in_schedule = 0;
 void process_schedule()
 {
-	printf("schedule\n");
+	task_struct *next_task;
+
 	if (in_schedule)
 	{
 		return;
@@ -82,12 +123,25 @@ void process_schedule()
 	{
 		cur_task = delete_task(cur_task);
 		jmp_process(cur_task);
+		return;
 	}
-	else if (cur_task->next != cur_task)
+
+	next_task = find_next_runnable_task(cur_task->next);
+	if (cur_task->state == running && next_task != NULL && next_task != cur_task)
 	{
-		cur_task = cur_task->next;
+		cur_task = next_task;
 		jmp_process(cur_task);
+		return;
 	}
+
+	if (cur_task->state != running && next_task != NULL)
+	{
+		cur_task = next_task;
+		jmp_process(cur_task);
+		return;
+	}
+
+	in_schedule = 0;
 }
 
 void jmp_process(task_struct *t)
@@ -117,9 +171,47 @@ void jmp_process(task_struct *t)
 
 void exit_process()
 {
-	printf("exit_schedule\n");
 	cur_task->state = exit;
 	process_schedule();
+}
+
+void process_sleep_ms(uint32_t ms)
+{
+	uint32_t sleep_ticks = timer_ms_to_ticks(ms);
+	uint32_t deadline_tick;
+
+	if (sleep_ticks == 0)
+	{
+		return;
+	}
+
+	deadline_tick = timer_get_ticks() + sleep_ticks;
+	asm volatile("sti");
+	while (!is_sleep_expired(timer_get_ticks(), deadline_tick))
+	{
+		asm volatile("hlt");
+	}
+	asm volatile("cli");
+}
+
+void process_wake_sleeping(uint32_t current_tick)
+{
+	task_struct *task = cur_task;
+
+	if (task == NULL)
+	{
+		return;
+	}
+
+	do
+	{
+		if (task->state == blocked && is_sleep_expired(current_tick, task->sleep_until_tick))
+		{
+			task->state = running;
+			task->sleep_until_tick = 0;
+		}
+		task = task->next;
+	} while (task != cur_task);
 }
 
 // 给一个task的某虚拟地址，映射一段物理内存，并返回物理内存的起始位置，要求映射为4k的倍数
@@ -140,11 +232,13 @@ void *map_task(task_struct *t, void *vaddr, size_t frame)
 	if (k == 0)
 	{
 		// 分配的地址就是低12位为0的
-		*dirEntry = (uint32_t)kalloc_frame(1) | 0x7;
+		uint32_t page_table_vaddr = (uint32_t)kalloc_frame(1);
+		zero_page((uint32_t *)page_table_vaddr);
+		*dirEntry = (page_table_vaddr - KERNEL_BASE) | 0x7;
 	}
 
 	// 页表的地址，也就是1024个entry
-	page_table *pageTable = *dirEntry & 0xFFFFF000;
+	page_table *pageTable = (page_table *)((*dirEntry & 0xFFFFF000) + KERNEL_BASE);
 
 	uint32_t *pageEntry = &(pageTable->entrys[tableIndex]);
 	if (*pageEntry & 0x1 == 1)
@@ -156,8 +250,8 @@ void *map_task(task_struct *t, void *vaddr, size_t frame)
 	uint32_t p_addr = kalloc_frame(frame);
 	for (size_t i = 0; i < frame; i++)
 	{
-		*pageEntry = p_addr + (i * 4096) | 0x7;
-		pageEntry += 1024;
+		*pageEntry = (p_addr - KERNEL_BASE) + (i * 4096) | 0x7;
+		pageEntry++;
 	}
 
 	return p_addr;
@@ -166,6 +260,7 @@ void *map_task(task_struct *t, void *vaddr, size_t frame)
 void cp_task_page_kernel(task_struct *t)
 {
 	t->page_dir = kalloc_frame(1);
+	zero_page((uint32_t *)t->page_dir);
 	page_table *paget_table = kalloc_frame(1024);
 
 	// 映射0-3G -> 0-3G

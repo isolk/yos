@@ -4,16 +4,19 @@
 #include <mem.h>
 #include "pm.h"
 
+#define KERNEL_BASE 0xC0000000u
+
 void init_elf(elf *e)
 {
 	e->file_header = *(elf_fh *)e;
 	elf_fh fh = e->file_header;
 	elf_ph *ph = e->program_headers;
+	uint8_t *raw = (uint8_t *)e;
 
 	elf_ph *addr = NULL;
 	for (size_t i = 0; i < fh.phnum; i++)
 	{
-		addr = fh.phoff + i * fh.phentsize + (uint32_t)e;
+		addr = (elf_ph *)(raw + fh.phoff + i * fh.phentsize);
 		ph[i] = *addr;
 	}
 }
@@ -40,13 +43,15 @@ void cp_elf_ph(elf *e, void *v_addr)
 {
 	elf_fh fh = e->file_header;
 	elf_ph *ph = e->program_headers;
+	uint8_t *raw = (uint8_t *)e;
+	uint8_t *dest = (uint8_t *)v_addr;
 	for (size_t i = 0; i < fh.phnum; i++)
 	{
-		void *addr = v_addr;
+		uint8_t *addr = dest;
 		if (i > 0)
 		{
-			addr = v_addr + (ph[i - 1].filesz / ph[i - 1].align + 1) * ph[i].align;
+			addr = dest + (ph[i - 1].filesz / ph[i - 1].align + 1) * ph[i - 1].align;
 		}
-		mem_copy(ph[i].offset + e, addr - 3 * 1024 * 1024 * 1024, ph[i].filesz);
+		mem_copy(raw + ph[i].offset, addr - KERNEL_BASE, ph[i].filesz);
 	}
 }

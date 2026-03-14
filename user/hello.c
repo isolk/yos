@@ -3,7 +3,11 @@
 #include <ystd.h>
 int _start()
 {
-	printf("user\n");
-	yexit(33);
+	for (int i = 0; i < 10; i++)
+	{
+		printf("i=%d\n", i);
+		sleep(1000);
+	}
+	yexit(0);
 	return 0;
 }

@@ -2,12 +2,30 @@
 #include "idt.h"
 #include <string.h>
 #include <stdint-gcc.h>
+#include <io.h>
+#include <terminal.h>
 #include "process.h"
 #include "gdt.h"
+
+#define TIMER_HZ 1024u
+
+static volatile uint32_t timer_ticks = 0;
+
 void init_time()
 {
+    uint8_t value = 0;
+
+    timer_ticks = 0;
+
+    write_port_b(0x70, 0x8a);
+    value = read_port_b(0x71);
+    write_port_b(0x70, 0x8a);
+    write_port_b(0x71, (value & 0xf0) | 0x06);
+
     write_port_b(0x70, 0x8b);
-    write_port_b(0x71, 0b10110); // 0001_0110
+    value = read_port_b(0x71);
+    write_port_b(0x70, 0x8b);
+    write_port_b(0x71, value | 0x40);
 
     write_port_b(0x70, 0x0c);
     read_port_b(0x71);
@@ -20,6 +38,9 @@ void time_handler()
     write_port_b(0x70, 0x0c);
     read_port_b(0x71);
 
+    timer_ticks++;
+    process_wake_sleeping(timer_ticks);
+
     write_port_b(0x20, 0x20);
     write_port_b(0xa0, 0x20);
 
@@ -27,6 +48,21 @@ void time_handler()
 
     process_schedule();
     // asm("jmpl $0x20,$0");
+}
+
+uint32_t timer_get_ticks()
+{
+    return timer_ticks;
+}
+
+uint32_t timer_ms_to_ticks(uint32_t ms)
+{
+    if (ms == 0)
+    {
+        return 0;
+    }
+
+    return (uint32_t)(((uint64_t)ms * TIMER_HZ + 999u) / 1000u);
 }
 
 void show_time()
@@ -79,7 +115,6 @@ void page_handler(uint32_t cr2, uint32_t err_code)
     {
         printf("errcode=%x,cr2=%x", err_code, cr2);
     }
-    printf("errcode=%x,cr2=%x", err_code, cr2);
     write_port_b(0x20, 0x20);
     write_port_b(0xa0, 0x20);
 }

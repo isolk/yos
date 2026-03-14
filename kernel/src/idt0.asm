@@ -66,10 +66,16 @@ default_handler_wrap:
 global page_handler_wrap
 extern page_handler
 page_handler_wrap:
+    pushad
+    cld
     mov eax,cr2
+    mov edx,[esp+32]
+    push edx
     push eax
     call page_handler
     add esp,8
+    popad
+    add esp,4
     iretd
 
 global general_handler_wrap

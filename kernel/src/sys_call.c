@@ -1,11 +1,12 @@
-#include <sys_call.h>>
+#include <sys_call.h>
+#include <terminal.h>
 #include "string.h"
 #include "process.h"
 
 void syscall_handler()
 {
     int16_t num = 0;
-    uint16_t pa1 = 0;
+    uint32_t pa1 = 0;
     asm(
         ""
         : "=a"(num), "=b"(pa1));
@@ -16,5 +17,9 @@ void syscall_handler()
     else if (num == 2)
     {
         exit_process();
+    }
+    else if (num == 3)
+    {
+        process_sleep_ms(pa1);
     }
 }

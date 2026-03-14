@@ -10,6 +10,7 @@
 enum TaskState
 {
 	running,
+	blocked,
 	exit
 };
 
@@ -20,6 +21,7 @@ typedef struct task_struct
 	page_table *page_dir; // 1024;
 	uint8_t state;
 	tss *_tss;
+	uint32_t sleep_until_tick;
 	struct task_struct *next;
 	struct task_struct *prev;
 } task_struct;
@@ -29,6 +31,10 @@ extern task_struct *cur_task; // 指向当前进程
 void start();
 
 void process_schedule();
+
+void process_sleep_ms(uint32_t ms);
+
+void process_wake_sleeping(uint32_t current_tick);
 
 void exit_process();
 
