@@ -1,3 +1,6 @@
+// Physical Memory Manager
+// Implements kernel heap allocator using ktrunk-based allocation
+// Functions: kalloc, kfree, kalloc_frame
 #include "pm.h"
 #include "string.h"
 typedef struct ktrunk

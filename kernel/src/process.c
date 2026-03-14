@@ -7,9 +7,8 @@
 #include "idle.h"
 #include "string.h"
 #include "time.h"
+#include "memlayout.h"
 #define cnew(TYPE) kalloc(sizeof(TYPE))
-
-#define KERNEL_BASE 0xC0000000u
 
 void cp_task_page_kernel(task_struct *t);
 void *map_task(task_struct *t, void *vaddr, size_t frame);
@@ -241,10 +240,10 @@ void *map_task(task_struct *t, void *vaddr, size_t frame)
 	page_table *pageTable = (page_table *)((*dirEntry & 0xFFFFF000) + KERNEL_BASE);
 
 	uint32_t *pageEntry = &(pageTable->entrys[tableIndex]);
-	if (*pageEntry & 0x1 == 1)
+	if ((*pageEntry & 0x1) == 1)
 	{
 		// 表示这个虚拟地址已经被映射，不能再次被映射了！
-		return -1;
+		return NULL;
 	}
 
 	uint32_t p_addr = kalloc_frame(frame);
@@ -254,7 +253,7 @@ void *map_task(task_struct *t, void *vaddr, size_t frame)
 		pageEntry++;
 	}
 
-	return p_addr;
+	return (void *)p_addr;
 }
 
 void cp_task_page_kernel(task_struct *t)

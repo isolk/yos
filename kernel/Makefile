@@ -1,5 +1,6 @@
-# LIBSTD=$(HOME)/yos/libc
-LIBSYS=$(HOME)/yos/system
+# Use relative paths instead of hardcoded paths
+LIBSTD=../libc
+LIBSYS=../system
 cc = i686-elf-gcc
 CFLAGS = -g -c -masm=intel -std=gnu99 -ffreestanding -O0 -Wall -Wextra  -I include -I $(LIBSYS)/include 
 SRC_C = $(wildcard src/*.c)

@@ -3,8 +3,7 @@
 #include <stdint-gcc.h>
 #include <mem.h>
 #include "pm.h"
-
-#define KERNEL_BASE 0xC0000000u
+#include "memlayout.h"
 
 void init_elf(elf *e)
 {

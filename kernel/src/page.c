@@ -1,4 +1,6 @@
-
+// Page Table Management
+// Manages page directories and page tables for virtual memory
+// Functions: init_page_all, init_page_dir, init_page_table
 #include "page.h"
 #include "pm.h"
 // ADDR(20)|AVL(3)|G|0(PAT)|D|A|PCD|PWT|US|RW|P
